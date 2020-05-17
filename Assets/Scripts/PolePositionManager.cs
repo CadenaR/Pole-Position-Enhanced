@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using Mirror;
 using UnityEngine;
@@ -64,6 +65,12 @@ public class PolePositionManager : NetworkBehaviour
 
         for (int i = 0; i < m_Players.Count; ++i)
         {
+            if(this.m_Players[i] == null)
+            {
+                this.m_Players.RemoveAt(i);
+                this.m_DebuggingSpheres[i].transform.position = new Vector3(0, 0, 0);
+                return;
+            }
             arcLengths[i] = ComputeCarArcLength(i);
         }
 

@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
-public class PlayerInfo : MonoBehaviour
+public class PlayerInfo : NetworkBehaviour
 {
-    public string Name { get; set; }
+    [SyncVar]
+    public string Name;
 
     public int ID { get; set; }
 
