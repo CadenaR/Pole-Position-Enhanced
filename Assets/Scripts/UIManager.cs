@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
 {
     public bool showGUI = true;
 
-    private NetworkManager m_NetworkManager;
+    private PoleNetworkManager m_NetworkManager;
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
@@ -26,7 +26,7 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        m_NetworkManager = FindObjectOfType<NetworkManager>();
+        m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
     }
 
     private void Start()

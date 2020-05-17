@@ -14,7 +14,7 @@ public class SetupPlayer : NetworkBehaviour
     [SyncVar] private string m_Name;
 
     private UIManager m_UIManager;
-    private NetworkManager m_NetworkManager;
+    private PoleNetworkManager m_NetworkManager;
     private PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     private PolePositionManager m_PolePositionManager;
@@ -59,7 +59,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         m_PlayerInfo = GetComponent<PlayerInfo>();
         m_PlayerController = GetComponent<PlayerController>();
-        m_NetworkManager = FindObjectOfType<NetworkManager>();
+        m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
         m_PolePositionManager = FindObjectOfType<PolePositionManager>();
         m_UIManager = FindObjectOfType<UIManager>();
     }
