@@ -4,7 +4,7 @@ using UnityEngine;
 using Mirror;
 
 [AddComponentMenu("")]
-public class PoleNetworkManager : NetworkRoomManager
+public class PoleNetworkManager : NetworkManager
 {
     public string PlayerName { get; set; }
 
