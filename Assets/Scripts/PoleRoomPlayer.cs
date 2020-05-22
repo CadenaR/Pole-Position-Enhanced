@@ -7,8 +7,11 @@ using Mirror;
 [AddComponentMenu("")]
 public class PoleRoomPlayer : NetworkRoomPlayer
 {
-    [SyncVar(hook = nameof(NameChanged))]
+    [SyncVar]
     public string Name;
+
+    [SyncVar]
+    public int SelectedCar;
 
     public override void OnStartClient()
     {
@@ -27,21 +30,18 @@ public class PoleRoomPlayer : NetworkRoomPlayer
         if (LogFilter.Debug) Debug.LogFormat("OnClientExitRoom {0}", SceneManager.GetActiveScene().path);
     }
 
-    #region SyncVar Hooks
-
-    void NameChanged(string _, string newName)
-    {
-        //OnClientReady(newReadyState);
-    }
-
-    #endregion
-
     #region Commands
 
     [Command]
     public void CmdChangeName(string pName)
     {
         Name = pName;
+    }
+
+    [Command]
+    public void CmdChangeCar(int car)
+    {
+        SelectedCar = car;
     }
 
     #endregion

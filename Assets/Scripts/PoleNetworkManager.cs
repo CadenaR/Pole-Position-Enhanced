@@ -51,16 +51,6 @@ public class PoleNetworkManager : NetworkRoomManager
         //chatWindow.gameObject.SetActive(true);
     }*/
 
-    public void ChangeName(string name)
-    {
-        foreach (NetworkRoomPlayer item in roomSlots)
-        {
-            if (item.isLocalPlayer)
-                item.GetComponentInParent<PoleRoomPlayer>().Name = name;
-            UnityEngine.Debug.Log(item.isLocalPlayer);
-        }
-    }
-
     #region Commands
 
     //[Command]

@@ -11,9 +11,9 @@ public class UIManager : NetworkBehaviour
 
     private PoleNetworkManager m_NetworkManager;
 
-    public string playerName { get; set; }
+    public string playerName {set { ChangeName(value); }}
 
-    public int carSelection { get; set; }
+    public int carSelection { set { ChangeCar(value); } }
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
@@ -81,14 +81,23 @@ public class UIManager : NetworkBehaviour
     }
 
     
-    public void ChangeName()
+    public void ChangeName(string pName)
     {
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
             if (item.hasAuthority)
-                item.GetComponentInParent<PoleRoomPlayer>().CmdChangeName(playerName);
+                item.GetComponentInParent<PoleRoomPlayer>().CmdChangeName(pName);
             UnityEngine.Debug.Log(item.hasAuthority);
         }
-        //m_NetworkManager.ChangeName(playerName);
+    }
+
+    public void ChangeCar(int car)
+    {
+        foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
+        {
+            if (item.hasAuthority)
+                item.GetComponentInParent<PoleRoomPlayer>().CmdChangeCar(car);
+            UnityEngine.Debug.Log(item.hasAuthority);
+        }
     }
 }
