@@ -51,6 +51,23 @@ public class PoleNetworkManager : NetworkRoomManager
         //chatWindow.gameObject.SetActive(true);
     }*/
 
+    #region Room
+
+    public override GameObject OnRoomServerCreateGamePlayer(NetworkConnection conn, GameObject roomPlayer)
+    {
+        // get start position from base class
+        Transform startPos = GetStartPosition();
+        GameObject gamePlayer = startPos != null
+            ? Instantiate(spawnPrefabs[roomPlayer.GetComponent<PoleRoomPlayer>().SelectedCar], startPos.position, startPos.rotation)
+            : Instantiate(spawnPrefabs[roomPlayer.GetComponent<PoleRoomPlayer>().SelectedCar], Vector3.zero, Quaternion.identity);
+        gamePlayer.name = playerPrefab.name;
+        gamePlayer.GetComponent<PlayerInfo>().Name = roomPlayer.GetComponent<PoleRoomPlayer>().Name;
+
+        return gamePlayer;
+    }
+
+    #endregion
+
     #region Commands
 
     //[Command]
