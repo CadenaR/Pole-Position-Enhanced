@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Diagnostics;
+using TMPro;
 
 [AddComponentMenu("")]
 public class PoleNetworkManager : NetworkRoomManager
@@ -57,6 +58,8 @@ public class PoleNetworkManager : NetworkRoomManager
     {
         // get start position from base class
         Transform startPos = GetStartPosition();
+        // Instantiation of the on game player getting the prefab from the registered spawnable prefabs. The selected color (int) matches with the array position 
+        // Red(0), Green (1), Yellow(2) & White(3) assigned at button clicked
         GameObject gamePlayer = startPos != null
             ? Instantiate(spawnPrefabs[roomPlayer.GetComponent<PoleRoomPlayer>().SelectedCar], startPos.position, startPos.rotation)
             : Instantiate(spawnPrefabs[roomPlayer.GetComponent<PoleRoomPlayer>().SelectedCar], Vector3.zero, Quaternion.identity);
@@ -66,12 +69,40 @@ public class PoleNetworkManager : NetworkRoomManager
         return gamePlayer;
     }
 
+    public void GUIUpdate()
+    {
+        foreach(TMP_Text field in FindObjectOfType<UIManager>().playerNameTexts)
+        {
+            field.text = "Waiting for Player...";
+        }
+
+        foreach (TMP_Text field in FindObjectOfType<UIManager>().playerReadyTexts)
+        {
+            field.text = "";
+        }
+
+        foreach (NetworkRoomPlayer item in roomSlots)
+        {
+            if(item.GetComponentInParent<PoleRoomPlayer>().Name == "")
+            {
+                FindObjectOfType<UIManager>().playerNameTexts[item.index].text = "Player " + item.index;
+            }
+            else
+            {
+                FindObjectOfType<UIManager>().playerNameTexts[item.index].text = item.GetComponentInParent<PoleRoomPlayer>().Name;
+            }
+            if (item.readyToBegin)
+            {
+                FindObjectOfType<UIManager>().playerReadyTexts[item.index].text = "<color=green>Ready</color>";
+            }
+            else
+            {
+                FindObjectOfType<UIManager>().playerReadyTexts[item.index].text = "<color=red>Not Ready</color>";
+            }
+        }
+
+    }
+
     #endregion
 
-    #region Commands
-
-    //[Command]
-
-
-    #endregion
 }

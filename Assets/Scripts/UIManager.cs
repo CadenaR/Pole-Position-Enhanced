@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : NetworkBehaviour
 {
@@ -21,8 +22,10 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private Button buttonServer;
     [SerializeField] private InputField inputFieldIP;
 
-    [Header("Room Menu")] [SerializeField] private GameObject roomMenu;
-  
+    [Header("Room Menu")]
+    [SerializeField] public TMP_Text[] playerNameTexts = new TMP_Text[4];
+    [SerializeField] public TMP_Text[] playerReadyTexts = new TMP_Text[4];
+
 
     [Header("In-Game HUD")] [SerializeField]
     private GameObject inGameHUD;
@@ -83,21 +86,36 @@ public class UIManager : NetworkBehaviour
     
     public void ChangeName(string pName)
     {
+        // Calls CmdChangeName only on the local player
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
             if (item.hasAuthority)
                 item.GetComponentInParent<PoleRoomPlayer>().CmdChangeName(pName);
-            UnityEngine.Debug.Log(item.hasAuthority);
+
+            m_NetworkManager.GUIUpdate();
         }
     }
 
     public void ChangeCar(int car)
     {
+        // Calls CmdChangeCar only on the local player
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
             if (item.hasAuthority)
                 item.GetComponentInParent<PoleRoomPlayer>().CmdChangeCar(car);
-            UnityEngine.Debug.Log(item.hasAuthority);
         }
     }
+
+    public void PlayerReady()
+    {
+        foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
+        {
+            if (item.hasAuthority)
+                item.CmdChangeReadyState(!item.readyToBegin);
+
+            m_NetworkManager.GUIUpdate();
+        }
+    }
+
+
 }

@@ -7,7 +7,11 @@ namespace Mirror.Examples.Chat
         [SyncVar]
         public string playerName;
 
-        public static event Action<Player, string> OnMessage;
+        //public static event Action<Player, string> OnMessage;
+
+        public delegate void OnMessageDelegate(Player player, string message);
+
+        public static event OnMessageDelegate OnMessage;
 
         [Command]
         public void CmdSend(string message)

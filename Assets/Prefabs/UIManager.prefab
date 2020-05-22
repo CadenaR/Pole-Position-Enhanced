@@ -2020,7 +2020,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000030517578, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6720611409971070018
@@ -3254,7 +3254,16 @@ MonoBehaviour:
   buttonClient: {fileID: 8250693148658649175}
   buttonServer: {fileID: 3781224660805484641}
   inputFieldIP: {fileID: 6791673652774024894}
-  roomMenu: {fileID: 5123416451868750139}
+  playerNameTexts:
+  - {fileID: 1761746361923677008}
+  - {fileID: 5739928841967480985}
+  - {fileID: 8483342333914188412}
+  - {fileID: 5829156629293001605}
+  playerReadyTexts:
+  - {fileID: 7989458385061137582}
+  - {fileID: 5634049294828008079}
+  - {fileID: 2048856544098936412}
+  - {fileID: 420883496836917750}
   inGameHUD: {fileID: 6415909394322138283}
   textSpeed: {fileID: 6415909394430996843}
   textLaps: {fileID: 6415909393398217422}
@@ -4278,7 +4287,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1008133011077469589}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6415909394017212768}
+        m_MethodName: PlayerReady
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &7612788008790295207
 GameObject:
   m_ObjectHideFlags: 0
