@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System.Diagnostics;
 
 [AddComponentMenu("")]
-public class PoleNetworkManager : NetworkManager
+public class PoleNetworkManager : NetworkRoomManager
 {
     public string PlayerName { get; set; }
 
@@ -20,24 +21,18 @@ public class PoleNetworkManager : NetworkManager
         public string name;
     }
 
-    public override void OnStartServer()
+    /*public override void OnStartServer()
     {
         base.OnStartServer();
         NetworkServer.RegisterHandler<CreatePlayerMessage>(OnCreatePlayer);
     }
 
-    public override void OnClientConnect(NetworkConnection conn)
+    /*public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
 
         // tell the server to create a player with this name
         conn.Send(new CreatePlayerMessage { name = PlayerName });
-    }
-
-    public override void OnServerAddPlayer(NetworkConnection conn)
-    {
-        //Overriding with empty project so OnCreatePlayer create the player assigning the entered name.
-        //This avoids from creating two playerClones for the same client
     }
 
     private void OnCreatePlayer(NetworkConnection connection, CreatePlayerMessage createPlayerMessage)
@@ -54,5 +49,22 @@ public class PoleNetworkManager : NetworkManager
         NetworkServer.AddPlayerForConnection(connection, playergo);
 
         //chatWindow.gameObject.SetActive(true);
+    }*/
+
+    public void ChangeName(string name)
+    {
+        foreach (NetworkRoomPlayer item in roomSlots)
+        {
+            if (item.isLocalPlayer)
+                item.GetComponentInParent<PoleRoomPlayer>().Name = name;
+            UnityEngine.Debug.Log(item.isLocalPlayer);
+        }
     }
+
+    #region Commands
+
+    //[Command]
+
+
+    #endregion
 }
