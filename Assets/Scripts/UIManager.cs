@@ -5,6 +5,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : NetworkBehaviour
 {
@@ -12,7 +13,7 @@ public class UIManager : NetworkBehaviour
 
     private PoleNetworkManager m_NetworkManager;
 
-    public string playerName {set { ChangeName(value); }}
+    public string playerName { get; set; }
 
     public int carSelection { set { ChangeCar(value); } }
 
@@ -45,6 +46,14 @@ public class UIManager : NetworkBehaviour
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
         
+    }
+
+    public void FixedUpdate()
+    {
+        if (SceneManager.GetActiveScene().name != "RoomScene")
+            return;
+
+        UpdateGUI();
     }
 
     public void UpdateSpeed(int speed)
@@ -84,15 +93,17 @@ public class UIManager : NetworkBehaviour
     }
 
     
-    public void ChangeName(string pName)
+    public void ChangeName()
     {
         // Calls CmdChangeName only on the local player
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
             if (item.hasAuthority)
-                item.GetComponentInParent<PoleRoomPlayer>().CmdChangeName(pName);
+            {
+                item.GetComponentInParent<PoleRoomPlayer>().CmdChangeName(playerName);
+                
+            }
 
-            m_NetworkManager.GUIUpdate();
         }
     }
 
@@ -111,11 +122,45 @@ public class UIManager : NetworkBehaviour
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
             if (item.hasAuthority)
+            {
                 item.CmdChangeReadyState(!item.readyToBegin);
+            }
 
-            m_NetworkManager.GUIUpdate();
         }
     }
 
+    private void UpdateGUI()
+    {
+        foreach (TMP_Text field in playerNameTexts)
+        {
+            field.text = "Waiting for Player...";
+        }
+
+        foreach (TMP_Text field in playerReadyTexts)
+        {
+            field.text = "";
+        }
+
+        foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
+        {
+            if (item.GetComponentInParent<PoleRoomPlayer>().Name == "")
+            {
+                playerNameTexts[item.index].text = "Player " + (item.index + 1);
+            }
+            else
+            {
+                playerNameTexts[item.index].text = item.GetComponentInParent<PoleRoomPlayer>().Name;
+            }
+
+            if (item.readyToBegin)
+            {
+                playerReadyTexts[item.index].text = "<color=green>Ready</color>";
+            }
+            else
+            {
+                playerReadyTexts[item.index].text = "<color=red>Not Ready</color>";
+            }
+        }
+    }
 
 }

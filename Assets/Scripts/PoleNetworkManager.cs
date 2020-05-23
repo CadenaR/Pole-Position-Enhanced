@@ -69,40 +69,6 @@ public class PoleNetworkManager : NetworkRoomManager
         return gamePlayer;
     }
 
-    public void GUIUpdate()
-    {
-        foreach(TMP_Text field in FindObjectOfType<UIManager>().playerNameTexts)
-        {
-            field.text = "Waiting for Player...";
-        }
-
-        foreach (TMP_Text field in FindObjectOfType<UIManager>().playerReadyTexts)
-        {
-            field.text = "";
-        }
-
-        foreach (NetworkRoomPlayer item in roomSlots)
-        {
-            if(item.GetComponentInParent<PoleRoomPlayer>().Name == "")
-            {
-                FindObjectOfType<UIManager>().playerNameTexts[item.index].text = "Player " + item.index;
-            }
-            else
-            {
-                FindObjectOfType<UIManager>().playerNameTexts[item.index].text = item.GetComponentInParent<PoleRoomPlayer>().Name;
-            }
-            if (item.readyToBegin)
-            {
-                FindObjectOfType<UIManager>().playerReadyTexts[item.index].text = "<color=green>Ready</color>";
-            }
-            else
-            {
-                FindObjectOfType<UIManager>().playerReadyTexts[item.index].text = "<color=red>Not Ready</color>";
-            }
-        }
-
-    }
-
     #endregion
 
 }

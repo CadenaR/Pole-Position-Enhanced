@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,10 +14,11 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public int SelectedCar;
 
+
     public override void OnStartClient()
     {
         if (LogFilter.Debug) Debug.LogFormat("OnStartClient {0}", SceneManager.GetActiveScene().path);
-
+        CmdChangeName("Player Joining...");
         base.OnStartClient();
     }
 
@@ -43,6 +45,11 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     {
         SelectedCar = car;
     }
+
+    #endregion
+
+    #region ClientRpc
+
 
     #endregion
 }
