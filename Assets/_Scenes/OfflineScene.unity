@@ -399,7 +399,7 @@ MonoBehaviour:
   - {fileID: 1508097745644926054, guid: 4dca3bf151f3f174593819c9fc61a104, type: 3}
   - {fileID: 1508097745644926054, guid: 677b1f099f0519c40815c09b97bf6918, type: 3}
   showRoomGUI: 0
-  minPlayers: 1
+  minPlayers: 2
   roomPlayerPrefab: {fileID: 8141725428746064635, guid: 1797183f3c6408d4a964d8a0ef5455c5,
     type: 3}
   RoomScene: Assets/_Scenes/RoomScene.unity
@@ -732,6 +732,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6939625489101824702, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: sceneId
+      value: 72493643
       objectReference: {fileID: 0}
     - target: {fileID: 8483342333914188412, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}

@@ -14,6 +14,8 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public int SelectedCar;
 
+    public static event Action<PoleRoomPlayer, string> OnMessage;
+
 
     public override void OnStartClient()
     {
@@ -46,10 +48,22 @@ public class PoleRoomPlayer : NetworkRoomPlayer
         SelectedCar = car;
     }
 
+    [Command]
+    public void CmdSend(string message)
+    {
+        if (message.Trim() != "")
+            RpcReceive(message.Trim());
+    }
+
     #endregion
 
     #region ClientRpc
 
+    [ClientRpc]
+    public void RpcReceive(string message)
+    {
+        OnMessage?.Invoke(this, message);
+    }
 
     #endregion
 }

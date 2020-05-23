@@ -24,9 +24,12 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private InputField inputFieldIP;
 
     [Header("Room Menu")]
-    [SerializeField] public TMP_Text[] playerNameTexts = new TMP_Text[4];
-    [SerializeField] public TMP_Text[] playerReadyTexts = new TMP_Text[4];
-
+    public TMP_Text[] playerNameTexts = new TMP_Text[4];
+    public TMP_Text[] playerReadyTexts = new TMP_Text[4];
+    //For Chat
+    public InputField chatMessage;
+    public Text chatHistory;
+    public Scrollbar scrollbar;
 
     [Header("In-Game HUD")] [SerializeField]
     private GameObject inGameHUD;
@@ -38,6 +41,7 @@ public class UIManager : NetworkBehaviour
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
+        
     }
 
     private void Start()
@@ -45,7 +49,9 @@ public class UIManager : NetworkBehaviour
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
-        
+
+        if (SceneManager.GetActiveScene().name == "RoomScene")
+            PoleRoomPlayer.OnMessage += OnPlayerMessage;
     }
 
     public void FixedUpdate()
@@ -92,12 +98,15 @@ public class UIManager : NetworkBehaviour
         ActivateInGameHUD();
     }
 
-    
+    #region Room
     public void ChangeName()
     {
         // Calls CmdChangeName only on the local player
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
+            if (item == null)
+                continue;
+
             if (item.hasAuthority)
             {
                 item.GetComponentInParent<PoleRoomPlayer>().CmdChangeName(playerName);
@@ -112,6 +121,9 @@ public class UIManager : NetworkBehaviour
         // Calls CmdChangeCar only on the local player
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
+            if (item == null)
+                continue;
+
             if (item.hasAuthority)
                 item.GetComponentInParent<PoleRoomPlayer>().CmdChangeCar(car);
         }
@@ -121,6 +133,9 @@ public class UIManager : NetworkBehaviour
     {
         foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         {
+            if (item == null)
+                continue;
+
             if (item.hasAuthority)
             {
                 item.CmdChangeReadyState(!item.readyToBegin);
@@ -141,26 +156,79 @@ public class UIManager : NetworkBehaviour
             field.text = "";
         }
 
-        foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
+        //foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
+        for(int i = 0; i < m_NetworkManager.roomSlots.Count; i++)
         {
-            if (item.GetComponentInParent<PoleRoomPlayer>().Name == "")
+
+            if (m_NetworkManager.roomSlots[i] == null)
             {
-                playerNameTexts[item.index].text = "Player " + (item.index + 1);
-            }
-            else
-            {
-                playerNameTexts[item.index].text = item.GetComponentInParent<PoleRoomPlayer>().Name;
+                m_NetworkManager.roomSlots.RemoveAt(i);
+                continue;
             }
 
-            if (item.readyToBegin)
+            if (m_NetworkManager.roomSlots[i].GetComponentInParent<PoleRoomPlayer>().Name == "")
             {
-                playerReadyTexts[item.index].text = "<color=green>Ready</color>";
+                playerNameTexts[i].text = "Player " + (i + 1);
             }
             else
             {
-                playerReadyTexts[item.index].text = "<color=red>Not Ready</color>";
+                playerNameTexts[i].text = m_NetworkManager.roomSlots[i].GetComponentInParent<PoleRoomPlayer>().Name;
+            }
+
+            if (m_NetworkManager.roomSlots[i].readyToBegin)
+            {
+                playerReadyTexts[i].text = "<color=green>Ready</color>";
+            }
+            else
+            {
+                playerReadyTexts[i].text = "<color=red>Not Ready</color>";
             }
         }
     }
+
+    //Chat
+    private void OnPlayerMessage(PoleRoomPlayer player, string message)
+    {
+        string prettyMessage = player.isLocalPlayer ?
+            $"<color=red>You: </color> {message}" :
+            $"<color=blue>{player.Name}: </color> {message}";
+        AppendMessage(prettyMessage);
+
+        Debug.Log(message);
+    }
+
+    public void OnSend()
+    {
+        if (!Input.GetKeyDown(KeyCode.Return)) return;
+        if (chatMessage.text.Trim() == "")
+            return;
+
+        // get our player
+        PoleRoomPlayer player = NetworkClient.connection.identity.GetComponent<PoleRoomPlayer>();
+
+        // send a message
+        player.CmdSend(chatMessage.text.Trim());
+
+        chatMessage.text = "";
+    }
+
+    internal void AppendMessage(string message)
+    {
+        StartCoroutine(AppendAndScroll(message));
+    }
+
+    IEnumerator AppendAndScroll(string message)
+    {
+        chatHistory.text += message + "\n";
+
+        // it takes 2 frames for the UI to update ?!?!
+        yield return null;
+        yield return null;
+
+        // slam the scrollbar down
+        scrollbar.value = 0;
+    }
+
+    #endregion
 
 }
