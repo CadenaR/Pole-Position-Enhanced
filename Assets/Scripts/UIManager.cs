@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
+
 public class UIManager : NetworkBehaviour
 {
     public bool showGUI = true;
@@ -14,8 +15,9 @@ public class UIManager : NetworkBehaviour
     private PoleNetworkManager m_NetworkManager;
 
     public string playerName { get; set; }
-
+    public Timer time = new Timer();
     public int carSelection { set { ChangeCar(value); } }
+    
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
@@ -33,7 +35,7 @@ public class UIManager : NetworkBehaviour
 
     [Header("In-Game HUD")] [SerializeField]
     private GameObject inGameHUD;
-
+    [SerializeField] private Text textTime;
     [SerializeField] private Text textSpeed;
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
@@ -57,9 +59,12 @@ public class UIManager : NetworkBehaviour
     public void FixedUpdate()
     {
         if (SceneManager.GetActiveScene().name != "RoomScene")
-            return;
-
-        UpdateGUI();
+        {
+            UpdateGameGUI();     
+        }
+        else
+            UpdateRoomGUI();
+        return;
     }
 
     public void UpdateSpeed(int speed)
@@ -144,7 +149,13 @@ public class UIManager : NetworkBehaviour
         }
     }
 
-    private void UpdateGUI()
+    private void UpdateGameGUI()
+    {
+        time.UpdateTimer();
+        textTime.text = time.timerText;
+    }
+
+    private void UpdateRoomGUI()
     {
         foreach (TMP_Text field in playerNameTexts)
         {
@@ -231,4 +242,37 @@ public class UIManager : NetworkBehaviour
 
     #endregion
 
+}
+
+public class Timer
+{
+    float startTime;
+    public String timerText;
+    public String[] lapTime;
+
+    void Start()
+    {        
+        startTime = Time.time;
+    }
+
+
+    public void UpdateTimer()
+    {
+        float t = Time.time - startTime;
+        string minutes = ((int)t / 60).ToString("00");
+        string seconds = ((int)t % 60).ToString("00");
+        string milliseconds = ((int)(t * 1000)%1000).ToString("000"); ;
+
+        timerText = minutes + " : " + seconds + " : " + milliseconds;
+    }
+
+    void ResetTimer()
+    {        
+        startTime = Time.time;
+    }
+
+    void saveTime(int lap)
+    {
+        lapTime[lap] = timerText;
+    }
 }
