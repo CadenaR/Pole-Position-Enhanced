@@ -82,7 +82,7 @@ public class PolePositionManager : NetworkBehaviour
             myRaceOrder += _player.Name + " ";
         }
 
-        Debug.Log("El orden de carrera es: " + myRaceOrder);
+        //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
     float ComputeCarArcLength(int ID)

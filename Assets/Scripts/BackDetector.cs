@@ -9,7 +9,7 @@ public class BackDetector : MonoBehaviour
     {
         if (other.gameObject.tag == "BackDetector") {
 
-            Debug.Log("esta marcha atras"); //flag aqui para el script de UI
+            Debug.Log("Está marcha atras"); //flag aqui para el script de UI
         
         }
     }

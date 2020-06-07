@@ -1,11 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEditor.Experimental.UIElements;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
     [SerializeField] public GameObject m_Focus;
-
+    
     [SerializeField] public Vector3 m_offset = new Vector3(10, 10, 10);
 
     [SerializeField] public CircuitController m_Circuit;
@@ -14,13 +17,14 @@ public class CameraController : MonoBehaviour
     [Range(0, 1)] [SerializeField] private float m_Following = 0.5f;
 
     private Vector3 m_Direction = Vector3.zero;
-
+    
     private Camera mainCamera;
 
     // Start is called before the first frame update
     void Start()
     {
         mainCamera = this.GetComponent<Camera>();
+        
     }
 
     // Update is called once per frame
@@ -28,6 +32,7 @@ public class CameraController : MonoBehaviour
     {
         if (m_Focus != null)
         {
+            
             if (this.m_Circuit != null)
             {
                 if (this.m_Direction.magnitude == 0)

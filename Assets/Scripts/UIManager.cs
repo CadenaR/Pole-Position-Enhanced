@@ -252,13 +252,13 @@ public class Timer
 
     void Start()
     {        
-        startTime = Time.time;
+        startTime = (float)NetworkTime.time;
     }
 
 
     public void UpdateTimer()
     {
-        float t = Time.time - startTime;
+        float t = (float)NetworkTime.time - startTime;
         string minutes = ((int)t / 60).ToString("00");
         string seconds = ((int)t % 60).ToString("00");
         string milliseconds = ((int)(t * 1000)%1000).ToString("000"); ;
@@ -268,10 +268,10 @@ public class Timer
 
     void ResetTimer()
     {        
-        startTime = Time.time;
+        startTime = (float)NetworkTime.time;
     }
 
-    void saveTime(int lap)
+    void SaveTime(int lap)
     {
         lapTime[lap] = timerText;
     }
