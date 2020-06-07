@@ -30,8 +30,7 @@ public class PlayerController : NetworkBehaviour
     private PlayerInfo m_PlayerInfo;
 
     private Rigidbody m_Rigidbody;
-    private float m_SteerHelper = 0.8f;
-
+    private float m_SteerHelper = 0.8f;        
 
     private float m_CurrentSpeed = 0;
 

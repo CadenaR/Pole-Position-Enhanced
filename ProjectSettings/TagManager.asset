@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Vehicle
   - Puppet
+  - BackDetector
+  - ChatWindow
+  - Checkpoints
   layers:
   - Default
   - TransparentFX
