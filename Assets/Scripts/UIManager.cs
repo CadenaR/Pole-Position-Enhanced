@@ -13,9 +13,10 @@ public class UIManager : NetworkBehaviour
     public bool showGUI = true;
 
     private PoleNetworkManager m_NetworkManager;
+    private PolePositionManager m_PositionManager;
 
     public string playerName { get; set; }
-    public Timer time = new Timer();
+    
     public int carSelection { set { ChangeCar(value); } }
     
 
@@ -48,12 +49,15 @@ public class UIManager : NetworkBehaviour
 
     private void Start()
     {
+        
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
 
         if (SceneManager.GetActiveScene().name == "RoomScene")
             PoleRoomPlayer.OnMessage += OnPlayerMessage;
+        if (SceneManager.GetActiveScene().name == "GameScene")
+            m_PositionManager = FindObjectOfType<PolePositionManager>();
     }
 
     public void FixedUpdate()
@@ -151,8 +155,8 @@ public class UIManager : NetworkBehaviour
 
     private void UpdateGameGUI()
     {
-        time.UpdateTimer();
-        textTime.text = time.timerText;
+        m_PositionManager.time.UpdateTimer();
+        textTime.text = m_PositionManager.time.timerText;
     }
 
     private void UpdateRoomGUI()
@@ -244,35 +248,3 @@ public class UIManager : NetworkBehaviour
 
 }
 
-public class Timer
-{
-    float startTime;
-    public String timerText;
-    public String[] lapTime;
-
-    void Start()
-    {        
-        startTime = (float)NetworkTime.time;
-    }
-
-
-    public void UpdateTimer()
-    {
-        float t = (float)NetworkTime.time - startTime;
-        string minutes = ((int)t / 60).ToString("00");
-        string seconds = ((int)t % 60).ToString("00");
-        string milliseconds = ((int)(t * 1000)%1000).ToString("000"); ;
-
-        timerText = minutes + " : " + seconds + " : " + milliseconds;
-    }
-
-    void ResetTimer()
-    {        
-        startTime = (float)NetworkTime.time;
-    }
-
-    void SaveTime(int lap)
-    {
-        lapTime[lap] = timerText;
-    }
-}

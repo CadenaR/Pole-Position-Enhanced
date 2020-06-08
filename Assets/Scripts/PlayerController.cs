@@ -10,6 +10,8 @@ using Mirror;
 
 public class PlayerController : NetworkBehaviour
 {
+
+
     #region Variables
 
     [Header("Movement")] public List<AxleInfo> axleInfos;
@@ -216,4 +218,18 @@ public class PlayerController : NetworkBehaviour
     }
 
     #endregion
+
+    #region Commands
+
+    [Command]
+    public void CmdGuardarTiempo()
+    {
+        tiempos.Add(FindObjectOfType<UIManager>().time.t);
+        Debug.Log(tiempos.ToString());
+    }
+
+    #endregion
+
+
+
 }

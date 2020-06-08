@@ -8,9 +8,12 @@ using UnityEngine;
 
 public class PolePositionManager : NetworkBehaviour
 {
+    public class SyncDictionaryTime : SyncDictionary<int, float> { }
+
     public int numPlayers;
     public PoleNetworkManager networkManager;
-
+    public Sync tiempos = new SyncListTime();
+    public Timer time = new Timer();
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
@@ -28,12 +31,15 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+  
+
     private void Update()
     {
         if (m_Players.Count == 0)
             return;
 
         UpdateRaceProgress();
+        
     }
 
     public void AddPlayer(PlayerInfo player)
@@ -113,4 +119,6 @@ public class PolePositionManager : NetworkBehaviour
 
         return minArcL;
     }
+
+    
 }

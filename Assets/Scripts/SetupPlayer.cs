@@ -17,7 +17,7 @@ public class SetupPlayer : NetworkBehaviour
     private PoleNetworkManager m_NetworkManager;
     private PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
-    private PolePositionManager m_PolePositionManager;
+    public PolePositionManager m_PolePositionManager;
 
     #region Start & Stop Callbacks
 

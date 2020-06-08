@@ -9,6 +9,9 @@ public class ParentCheck : NetworkBehaviour
     private List<GameObject> Checkpoints = new List<GameObject>();
     int n = 0;
 
+    bool clasificacion = true;
+
+
     public void CheckpointTriggered(GameObject player)
     {
         //recibir la información del servidor()
@@ -19,12 +22,19 @@ public class ParentCheck : NetworkBehaviour
         CheckLap(player);        
         Checkpoints[n%11].SetActive(true);        
     }
+   
 
     private void CheckLap(GameObject player)
     {
         if (n == 12)
         {
             Debug.Log("He dado una vuelta");
+            if (clasificacion)
+            {
+                player.GetComponent<SetupPlayer>().m_PolePositionManager.CmdGuardarTiempo();
+
+                clasificacion = false;
+            }
             player.GetComponent<PlayerInfo>().CmdIncreaseLap();
             n = 0;
         }
