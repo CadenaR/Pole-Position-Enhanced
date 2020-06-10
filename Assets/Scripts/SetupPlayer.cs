@@ -82,5 +82,5 @@ public class SetupPlayer : NetworkBehaviour
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
-    }
+    }    
 }

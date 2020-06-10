@@ -11,12 +11,13 @@ public class PolePositionManager : NetworkBehaviour
     public class SyncDictionaryTime : SyncDictionary<int, float> { }
 
     public int numPlayers;
-    public PoleNetworkManager networkManager;
-    public Sync tiempos = new SyncListTime();
+    public PoleNetworkManager networkManager;    
     public Timer time = new Timer();
+    public List<int> ordenSalida = new List<int>();
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
+    public bool startRace = false;
 
     private void Awake()
     {
@@ -29,12 +30,10 @@ public class PolePositionManager : NetworkBehaviour
             m_DebuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             m_DebuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-    }
-
-  
+    }  
 
     private void Update()
-    {
+    {   
         if (m_Players.Count == 0)
             return;
 
@@ -118,7 +117,5 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         return minArcL;
-    }
-
-    
+    }   
 }

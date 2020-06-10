@@ -222,14 +222,11 @@ public class PlayerController : NetworkBehaviour
     #region Commands
 
     [Command]
-    public void CmdGuardarTiempo()
+    public void CmdGuardarPosInicio()
     {
-        tiempos.Add(FindObjectOfType<UIManager>().time.t);
-        Debug.Log(tiempos.ToString());
+        FindObjectOfType<PolePositionManager>().ordenSalida.Add(FindObjectOfType <PlayerInfo>().ID);
+        Debug.Log(FindObjectOfType<PolePositionManager>().ordenSalida.ToString());
     }
 
     #endregion
-
-
-
 }

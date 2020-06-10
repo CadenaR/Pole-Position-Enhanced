@@ -31,7 +31,7 @@ public class ParentCheck : NetworkBehaviour
             Debug.Log("He dado una vuelta");
             if (clasificacion)
             {
-                player.GetComponent<SetupPlayer>().m_PolePositionManager.CmdGuardarTiempo();
+                player.GetComponent<PlayerController>().CmdGuardarPosInicio();
 
                 clasificacion = false;
             }

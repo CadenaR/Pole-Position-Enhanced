@@ -13,7 +13,7 @@ public class UIManager : NetworkBehaviour
     public bool showGUI = true;
 
     private PoleNetworkManager m_NetworkManager;
-    private PolePositionManager m_PositionManager;
+    public PolePositionManager m_PositionManager;
 
     public string playerName { get; set; }
     
@@ -41,6 +41,8 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
 
+    public bool ready = false;
+
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
@@ -49,25 +51,36 @@ public class UIManager : NetworkBehaviour
 
     private void Start()
     {
-        
+
         buttonHost.onClick.AddListener(() => StartHost());
         buttonClient.onClick.AddListener(() => StartClient());
         buttonServer.onClick.AddListener(() => StartServer());
 
         if (SceneManager.GetActiveScene().name == "RoomScene")
             PoleRoomPlayer.OnMessage += OnPlayerMessage;
-        if (SceneManager.GetActiveScene().name == "GameScene")
+        if (SceneManager.GetActiveScene().name == "GameScene") {            
             m_PositionManager = FindObjectOfType<PolePositionManager>();
+        }
     }
 
     public void FixedUpdate()
     {
-        if (SceneManager.GetActiveScene().name != "RoomScene")
+        if (SceneManager.GetActiveScene().name == "GameScene" && ready)
         {
-            UpdateGameGUI();     
+            UpdateGameGUI();
         }
-        else
+        if (SceneManager.GetActiveScene().name == "RoomScene")
+        {
             UpdateRoomGUI();
+        }
+        if (m_PositionManager == null)
+        {
+            m_PositionManager = FindObjectOfType<PolePositionManager>();
+        }
+        else if(!ready)
+        { 
+            ready = true;
+        }
         return;
     }
 
