@@ -14,7 +14,8 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar]
     public int checkpoint = 0;
 
-    public int ID { get; set; }
+    [SyncVar]
+    public int ID;
 
     public int CurrentPosition { get; set; }
 

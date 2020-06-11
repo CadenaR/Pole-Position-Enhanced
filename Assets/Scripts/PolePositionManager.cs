@@ -8,12 +8,13 @@ using UnityEngine;
 
 public class PolePositionManager : NetworkBehaviour
 {
-    public class SyncDictionaryTime : SyncDictionary<int, float> { }
+    //public class SyncListOrder : SyncList<int> { }
 
     public int numPlayers;
     public PoleNetworkManager networkManager;    
     public Timer time = new Timer();
     public List<int> ordenSalida = new List<int>();
+    //public SyncListOrder ordenSalida = new SyncListOrder();
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 /*
 	Documentation: https://mirror-networking.com/docs/Guides/NetworkBehaviour.html
@@ -219,13 +220,34 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 
-    #region Commands
+    #region Commands   
 
     [Command]
-    public void CmdGuardarPosInicio()
+    public void CmdSavePos(int Id)
     {
-        FindObjectOfType<PolePositionManager>().ordenSalida.Add(FindObjectOfType <PlayerInfo>().ID);
-        Debug.Log(FindObjectOfType<PolePositionManager>().ordenSalida.ToString());
+        RpcClientPlayerId(Id);        
+    }
+
+    [Command]
+    public void CmdChangeScene(string Scene)
+    {
+        //REINICIAR ESCENA
+        //FindObjectOfType<PoleNetworkManager>().ServerChangeScene(Scene);
+    }
+    #endregion
+
+    #region RPC
+    
+    [ClientRpc]
+    public void RpcClientPlayerId(int Id)
+    {
+        FindObjectOfType<PolePositionManager>().ordenSalida.Add(Id);
+
+        if (FindObjectOfType<PolePositionManager>().ordenSalida.Count == FindObjectOfType<PoleNetworkManager>().roomSlots.Count)
+        {
+            FindObjectOfType<PoleNetworkManager>().clasif = false;
+            CmdChangeScene(SceneManager.GetActiveScene().name);
+        }
     }
 
     #endregion

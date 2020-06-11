@@ -9,7 +9,12 @@ public class ParentCheck : NetworkBehaviour
     private List<GameObject> Checkpoints = new List<GameObject>();
     int n = 0;
 
-    bool clasificacion = true;
+    bool clasificacion;
+
+    private void Awake()
+    {
+        clasificacion = FindObjectOfType<PoleNetworkManager>().clasif;
+    }
 
 
     public void CheckpointTriggered(GameObject player)
@@ -31,9 +36,8 @@ public class ParentCheck : NetworkBehaviour
             Debug.Log("He dado una vuelta");
             if (clasificacion)
             {
-                player.GetComponent<PlayerController>().CmdGuardarPosInicio();
-
-                clasificacion = false;
+                Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);
+                player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);                
             }
             player.GetComponent<PlayerInfo>().CmdIncreaseLap();
             n = 0;
