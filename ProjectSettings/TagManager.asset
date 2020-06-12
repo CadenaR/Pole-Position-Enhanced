@@ -9,6 +9,7 @@ TagManager:
   - BackDetector
   - ChatWindow
   - Checkpoints
+  - UIMarchaAtras
   layers:
   - Default
   - TransparentFX

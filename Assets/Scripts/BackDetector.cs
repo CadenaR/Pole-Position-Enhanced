@@ -1,16 +1,35 @@
-﻿using System;
+﻿using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BackDetector : MonoBehaviour
 {
-    private void OnTriggerStay(Collider other)
+    public GameObject marchaAtras;
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "BackDetector") {
+        if (other.gameObject.tag == "BackDetector")
+        {
+            if (other.GetComponentInParent<PlayerController>().hasAuthority) 
+            {
 
-            Debug.Log("Está marcha atras"); //flag aqui para el script de UI
+                marchaAtras.SetActive(true);
+            }
+        }
         
+            
+        
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "BackDetector")
+        {
+            if (other.GetComponentInParent<PlayerController>().hasAuthority)
+            {
+
+                marchaAtras.SetActive(false);
+            }
         }
     }
 }
