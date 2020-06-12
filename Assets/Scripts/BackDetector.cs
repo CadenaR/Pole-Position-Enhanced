@@ -15,6 +15,7 @@ public class BackDetector : MonoBehaviour
             {
 
                 marchaAtras.SetActive(true);
+
             }
         }
         
@@ -29,6 +30,7 @@ public class BackDetector : MonoBehaviour
             {
 
                 marchaAtras.SetActive(false);
+                
             }
         }
     }
