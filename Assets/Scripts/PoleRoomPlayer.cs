@@ -54,7 +54,7 @@ public class PoleRoomPlayer : NetworkRoomPlayer
         if (message.Trim() != "")
             RpcReceive(message.Trim());
     }
-
+    
     #endregion
 
     #region ClientRpc

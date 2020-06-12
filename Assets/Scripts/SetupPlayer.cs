@@ -18,6 +18,27 @@ public class SetupPlayer : NetworkBehaviour
     private PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     public PolePositionManager m_PolePositionManager;
+    public bool m_raceStart;
+    public bool raceStart
+    {
+        get { return m_raceStart; }
+        set
+        {
+            m_raceStart = value;
+            if (hasAuthority)
+            {
+                if (value)
+                {
+                    m_PlayerController.enabled = true;
+                    
+                }
+                else
+                {
+                    m_PlayerController.enabled = false;
+                }
+            }            
+        }
+    }
 
     #region Start & Stop Callbacks
 
@@ -60,15 +81,15 @@ public class SetupPlayer : NetworkBehaviour
         m_PlayerController = GetComponent<PlayerController>();
         m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
         m_PolePositionManager = FindObjectOfType<PolePositionManager>();
-        m_UIManager = FindObjectOfType<UIManager>();
+        m_UIManager = FindObjectOfType<UIManager>();        
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if (isLocalPlayer)
+        raceStart = false;
+        if (hasAuthority)
         {
-            m_PlayerController.enabled = true;
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             ConfigureCamera();
         }
@@ -82,5 +103,32 @@ public class SetupPlayer : NetworkBehaviour
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
-    }    
+    }
+
+    #region Commands
+
+    [Command]
+    public void CmdStartRace()
+    {        
+        RpcSetRaceStart(true);
+    }
+
+    [Command]
+    public void CmdEndRace()
+    {
+        RpcSetRaceStart(false);
+    }
+
+    #endregion
+
+    #region ClientRcp
+
+    [ClientRpc]
+    public void RpcSetRaceStart(bool b)
+    {
+        raceStart = b;
+        FindObjectOfType<PolePositionManager>().time.ResetTimer();
+    }
+
+    #endregion
 }

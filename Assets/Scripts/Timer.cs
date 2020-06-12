@@ -26,12 +26,12 @@ public class Timer
         timerText = minutes + " : " + seconds + " : " + milliseconds;
     }
 
-    void ResetTimer()
+    public void ResetTimer()
     {
         startTime = (float)NetworkTime.time;
     }
 
-    void SaveTime(int lap)
+    public void SaveTime(int lap)
     {
         lapTime[lap] = timerText;
     }

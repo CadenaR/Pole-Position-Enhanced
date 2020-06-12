@@ -10,6 +10,9 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : NetworkBehaviour
 {
+
+    double startTime;
+    double t;
     public bool showGUI = true;
 
     private PoleNetworkManager m_NetworkManager;
@@ -40,9 +43,10 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private Text textSpeed;
     [SerializeField] private Text textLaps;
     [SerializeField] private Text textPosition;
+    [SerializeField] private Text Semaphore;
 
     public bool ready = false;
-
+    
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
@@ -58,7 +62,8 @@ public class UIManager : NetworkBehaviour
 
         if (SceneManager.GetActiveScene().name == "RoomScene")
             PoleRoomPlayer.OnMessage += OnPlayerMessage;
-        if (SceneManager.GetActiveScene().name == "GameScene") {            
+        if (SceneManager.GetActiveScene().name == "GameScene") {
+            startTime = NetworkTime.time;               
             m_PositionManager = FindObjectOfType<PolePositionManager>();
         }
     }
@@ -167,9 +172,26 @@ public class UIManager : NetworkBehaviour
     }
 
     private void UpdateGameGUI()
-    {
-        m_PositionManager.time.UpdateTimer();
-        textTime.text = m_PositionManager.time.timerText;
+    {   
+        if(NetworkClient.connection.identity.GetComponent<SetupPlayer>().raceStart){
+            if(Semaphore.text == "go!" && (int)m_PositionManager.time.t == 1)
+            {
+                Semaphore.text = "";
+            }
+            m_PositionManager.time.UpdateTimer();
+            textTime.text = m_PositionManager.time.timerText;
+        }
+        else{
+            t = (NetworkTime.time - startTime)%60;
+            if(t >= 2){                
+                    Semaphore.text = "" + (5 -  (int)t);
+                if (t >= 5)
+                {
+                    Semaphore.text = "go!";
+                    NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdStartRace();
+                }
+            }
+        }
     }
 
     private void UpdateRoomGUI()
