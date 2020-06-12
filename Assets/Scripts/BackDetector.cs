@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class BackDetector : MonoBehaviour
 {
-    public GameObject marchaAtras; 
+    public GameObject marchaAtras;
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "BackDetector")
@@ -15,7 +15,6 @@ public class BackDetector : MonoBehaviour
             {
 
                 marchaAtras.SetActive(true);
-                
             }
         }
         
