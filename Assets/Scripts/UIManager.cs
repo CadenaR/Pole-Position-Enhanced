@@ -114,8 +114,14 @@ public class UIManager : NetworkBehaviour
 
     public void StartClient()
     {
-        m_NetworkManager.StartClient();
-        m_NetworkManager.networkAddress = inputFieldIP.text;
+        if(inputFieldIP.text.Trim() == "")
+        {
+            m_NetworkManager.StartClient();
+        }
+        else
+        {
+            m_NetworkManager.StartClient(new Uri(inputFieldIP.text.Trim()));
+        }
         ActivateInGameHUD();
     }
 
