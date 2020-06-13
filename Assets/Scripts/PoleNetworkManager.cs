@@ -11,7 +11,7 @@ public class PoleNetworkManager : NetworkRoomManager
     public bool clasif = true;
 
     public string PlayerName { get; set; }
-
+     
     public void SetHostname(string hostname)
     {
         networkAddress = hostname;

@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 public class UIManager : NetworkBehaviour
 {
 
-    double startTime;
+    public double startTime;
     double t;
     public bool showGUI = true;
 
@@ -63,7 +63,7 @@ public class UIManager : NetworkBehaviour
         if (SceneManager.GetActiveScene().name == "RoomScene")
             PoleRoomPlayer.OnMessage += OnPlayerMessage;
         if (SceneManager.GetActiveScene().name == "GameScene") {
-            startTime = NetworkTime.time;               
+            startTime = NetworkTime.time;
             m_PositionManager = FindObjectOfType<PolePositionManager>();
         }
     }
@@ -92,6 +92,11 @@ public class UIManager : NetworkBehaviour
     public void UpdateSpeed(int speed)
     {
         textSpeed.text = "Speed " + speed + " Km/h";
+    }
+
+    public void UpdatePositions(string myRaceOrder)
+    {
+        textPosition.text = myRaceOrder;
     }
 
     public void ActivateMainMenu()
@@ -187,7 +192,7 @@ public class UIManager : NetworkBehaviour
             m_PositionManager.time.UpdateTimer();
             textTime.text = m_PositionManager.time.timerText;
         }
-        else{
+        else if (!FindObjectOfType<SetupPlayer>().stop){
             t = (NetworkTime.time - startTime)%60;
             if(t >= 2){                
                     Semaphore.text = "" + (5 -  (int)t);

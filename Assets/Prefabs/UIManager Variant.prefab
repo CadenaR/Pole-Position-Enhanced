@@ -177,6 +177,21 @@ PrefabInstance:
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 6415909392756466390, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_FontData.m_Alignment
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909392756466391, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 10.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415909392756466391, guid: 5c339809502a33749b546f6663bcfb75,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -4.9
+      objectReference: {fileID: 0}
     - target: {fileID: 6415909392830046996, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -230,7 +245,7 @@ PrefabInstance:
     - target: {fileID: 6415909394017212769, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}
       propertyPath: m_Name
-      value: UIManager
+      value: UIManager Variant
       objectReference: {fileID: 0}
     - target: {fileID: 6415909394017212771, guid: 5c339809502a33749b546f6663bcfb75,
         type: 3}

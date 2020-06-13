@@ -83,11 +83,14 @@ public class PolePositionManager : NetworkBehaviour
         m_Players.Sort(new PlayerInfoComparer(arcLengths));
 
         string myRaceOrder = "";
+        int playerPlace = 1;
         foreach (var _player in m_Players)
         {
-            myRaceOrder += _player.Name + " ";
+            myRaceOrder += playerPlace + "° " +  _player.Name + "\n ";
+            playerPlace++;
         }
 
+        FindObjectOfType<UIManager>().UpdatePositions(myRaceOrder);
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 

@@ -13,9 +13,10 @@ public class SetupPlayer : NetworkBehaviour
     [SyncVar] private int m_ID;
     [SyncVar] private string m_Name;
 
+    public bool stop = false;
     private UIManager m_UIManager;
     private PoleNetworkManager m_NetworkManager;
-    private PlayerController m_PlayerController;
+    public PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     public PolePositionManager m_PolePositionManager;
     public bool m_raceStart;
@@ -131,18 +132,31 @@ public class SetupPlayer : NetworkBehaviour
     }
 
     [Command]
-    public void CmdEndRace()
+    public void CmdEndClassification()
     {
-        RpcSetRaceStart(false);
+        //int pos = m_PolePositionManager.ordenSalida.IndexOf(this.GetComponentInParent<PlayerInfo>().ID);
+        stop = true;
+        RpcRestartSpeed();
+        this.GetComponentInParent<Transform>().position = NetworkManager.startPositions[3].position;
+        this.GetComponentInParent<Transform>().rotation = NetworkManager.startPositions[3].rotation;
+        stop = false;
+
     }
 
     #endregion
 
-    #region ClientRcp
+    #region ClientRpc
+    [ClientRpc]
+    public void RpcRestartSpeed(){
+        m_PlayerController.enabled = false;
+        FindObjectOfType<UIManager>().startTime = NetworkTime.time;
+        raceStart = false;
+        this.GetComponentInParent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+    }
 
     [ClientRpc]
     public void RpcSetRaceStart(bool b)
-    {
+    {        
         raceStart = b;
         FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }

@@ -26,7 +26,7 @@ public class PlayerController : NetworkBehaviour
     public float slipLimit = 0.2f;
 
     private float CurrentRotation { get; set; }
-    private float InputAcceleration { get; set; }
+    public float InputAcceleration { get; set; }
     private float InputSteering { get; set; }
     private float InputBrake { get; set; }
 
@@ -35,17 +35,16 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody m_Rigidbody;
     private float m_SteerHelper = 0.8f;        
 
-    private float m_CurrentSpeed = 0;
+    public float m_CurrentSpeed = 0;
 
-    private float Speed
+    public float Speed
     {
         get { return m_CurrentSpeed; }
         set
         {
             if (Math.Abs(m_CurrentSpeed - value) < float.Epsilon) return;
             m_CurrentSpeed = value;
-            if (OnSpeedChangeEvent != null)
-                OnSpeedChangeEvent(m_CurrentSpeed);
+            OnSpeedChangeEvent?.Invoke(m_CurrentSpeed);
         }
     }
 
@@ -65,69 +64,85 @@ public class PlayerController : NetworkBehaviour
 
     public void Update()
     {
-        InputAcceleration = Input.GetAxis("Vertical");
-        InputSteering = Input.GetAxis(("Horizontal"));
-        InputBrake = Input.GetAxis("Jump");
-        Speed = m_Rigidbody.velocity.magnitude;
+        if (FindObjectOfType<SetupPlayer>().raceStart && !FindObjectOfType<SetupPlayer>().stop){
+            InputAcceleration = Input.GetAxis("Vertical");
+            InputSteering = Input.GetAxis(("Horizontal"));
+            InputBrake = Input.GetAxis("Jump");
+            Speed = m_Rigidbody.velocity.magnitude;
+            Debug.Log("gasgwtyway");
+        }
+        else {
+            //Debug.Log("bbbagoh");
+            InputAcceleration = 0;
+            //InputAcceleration = -1;
+            m_Rigidbody.velocity.Set(0,0,0);
+            InputSteering = 0;
+            InputBrake = 0;
+            Speed = 0;
+        }
     }
 
     public void FixedUpdate()
     {
-        InputSteering = Mathf.Clamp(InputSteering, -1, 1);
-        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
-        InputBrake = Mathf.Clamp(InputBrake, 0, 1);
-
-        float steering = maxSteeringAngle * InputSteering;
-
-        foreach (AxleInfo axleInfo in axleInfos)
+        if (FindObjectOfType<SetupPlayer>().raceStart)
         {
-            if (axleInfo.steering)
+            Debug.Log("agoh");
+            InputSteering = Mathf.Clamp(InputSteering, -1, 1);
+            InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
+            InputBrake = Mathf.Clamp(InputBrake, 0, 1);
+
+            float steering = maxSteeringAngle * InputSteering;
+
+            foreach (AxleInfo axleInfo in axleInfos)
             {
-                axleInfo.leftWheel.steerAngle = steering;
-                axleInfo.rightWheel.steerAngle = steering;
+                if (axleInfo.steering)
+                {
+                    axleInfo.leftWheel.steerAngle = steering;
+                    axleInfo.rightWheel.steerAngle = steering;
+                }
+
+                if (axleInfo.motor)
+                {
+                    if (InputAcceleration > float.Epsilon)
+                    {
+                        axleInfo.leftWheel.motorTorque = forwardMotorTorque;
+                        axleInfo.leftWheel.brakeTorque = 0;
+                        axleInfo.rightWheel.motorTorque = forwardMotorTorque;
+                        axleInfo.rightWheel.brakeTorque = 0;
+                    }
+
+                    if (InputAcceleration < -float.Epsilon)
+                    {
+                        axleInfo.leftWheel.motorTorque = -backwardMotorTorque;
+                        axleInfo.leftWheel.brakeTorque = 0;
+                        axleInfo.rightWheel.motorTorque = -backwardMotorTorque;
+                        axleInfo.rightWheel.brakeTorque = 0;
+                    }
+
+                    if (Math.Abs(InputAcceleration) < float.Epsilon)
+                    {
+                        axleInfo.leftWheel.motorTorque = 0;
+                        axleInfo.leftWheel.brakeTorque = engineBrake;
+                        axleInfo.rightWheel.motorTorque = 0;
+                        axleInfo.rightWheel.brakeTorque = engineBrake;
+                    }
+
+                    if (InputBrake > 0)
+                    {
+                        axleInfo.leftWheel.brakeTorque = footBrake;
+                        axleInfo.rightWheel.brakeTorque = footBrake;
+                    }
+                }
+
+                ApplyLocalPositionToVisuals(axleInfo.leftWheel);
+                ApplyLocalPositionToVisuals(axleInfo.rightWheel);
             }
 
-            if (axleInfo.motor)
-            {
-                if (InputAcceleration > float.Epsilon)
-                {
-                    axleInfo.leftWheel.motorTorque = forwardMotorTorque;
-                    axleInfo.leftWheel.brakeTorque = 0;
-                    axleInfo.rightWheel.motorTorque = forwardMotorTorque;
-                    axleInfo.rightWheel.brakeTorque = 0;
-                }
-
-                if (InputAcceleration < -float.Epsilon)
-                {
-                    axleInfo.leftWheel.motorTorque = -backwardMotorTorque;
-                    axleInfo.leftWheel.brakeTorque = 0;
-                    axleInfo.rightWheel.motorTorque = -backwardMotorTorque;
-                    axleInfo.rightWheel.brakeTorque = 0;
-                }
-
-                if (Math.Abs(InputAcceleration) < float.Epsilon)
-                {
-                    axleInfo.leftWheel.motorTorque = 0;
-                    axleInfo.leftWheel.brakeTorque = engineBrake;
-                    axleInfo.rightWheel.motorTorque = 0;
-                    axleInfo.rightWheel.brakeTorque = engineBrake;
-                }
-
-                if (InputBrake > 0)
-                {
-                    axleInfo.leftWheel.brakeTorque = footBrake;
-                    axleInfo.rightWheel.brakeTorque = footBrake;
-                }
-            }
-
-            ApplyLocalPositionToVisuals(axleInfo.leftWheel);
-            ApplyLocalPositionToVisuals(axleInfo.rightWheel);
+            SteerHelper();
+            SpeedLimiter();
+            AddDownForce();
+            TractionControl();
         }
-
-        SteerHelper();
-        SpeedLimiter();
-        AddDownForce();
-        TractionControl();
     }
 
     #endregion
