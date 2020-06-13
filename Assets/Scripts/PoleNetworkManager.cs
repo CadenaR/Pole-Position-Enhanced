@@ -29,7 +29,7 @@ public class PoleNetworkManager : NetworkRoomManager
     public override GameObject OnRoomServerCreateGamePlayer(NetworkConnection conn, GameObject roomPlayer)
     {
         // get start position from base class
-        Transform startPos = GetStartPosition();
+        Transform startPos = startPositions[0];
         // Instantiation of the on game player getting the prefab from the registered spawnable prefabs. The selected color (int) matches with the array position 
         // Red(0), Green (1), Yellow(2) & White(3) assigned at button clicked
         GameObject gamePlayer = startPos != null

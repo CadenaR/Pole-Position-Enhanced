@@ -40,6 +40,12 @@ public class SetupPlayer : NetworkBehaviour
         }
     }
 
+    public GameObject carBody;
+    public GameObject carWheelFR;
+    public GameObject carWheelFL;
+    public GameObject carWheelBR;
+    public GameObject carWheelBL;
+
     #region Start & Stop Callbacks
 
     /// <summary>
@@ -91,6 +97,7 @@ public class SetupPlayer : NetworkBehaviour
         if (hasAuthority)
         {
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
+            AppearCar();
             ConfigureCamera();
         }
     }
@@ -103,6 +110,16 @@ public class SetupPlayer : NetworkBehaviour
     void ConfigureCamera()
     {
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
+    }
+
+    void AppearCar()
+    {
+        this.GetComponentInParent<BoxCollider>().isTrigger = false;
+        carBody.GetComponent<Renderer>().enabled = true;
+        carWheelFR.GetComponent<Renderer>().enabled = true;
+        carWheelFL.GetComponent<Renderer>().enabled = true;
+        carWheelBR.GetComponent<Renderer>().enabled = true;
+        carWheelBL.GetComponent<Renderer>().enabled = true;
     }
 
     #region Commands
