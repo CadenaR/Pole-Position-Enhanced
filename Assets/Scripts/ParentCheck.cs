@@ -37,7 +37,9 @@ public class ParentCheck : NetworkBehaviour
             if (clasificacion)
             {         
                 //Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);           
-                player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);                
+                player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);
+                n = 0;
+                return;
             }
             else{
                 FindObjectOfType<UIManager>().nextLap = true;

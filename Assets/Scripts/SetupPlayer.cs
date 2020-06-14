@@ -76,6 +76,9 @@ public class SetupPlayer : NetworkBehaviour
         raceStart = false;
         if (hasAuthority)
         {
+            FindObjectOfType<ParentCheck>().RestartCheckpoints();
+            FindObjectOfType<PoleNetworkManager>().clasif = true;
+            m_NetworkManager.clasif = true;
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             m_PlayerController.enabled = true;
             AppearCar();
@@ -126,7 +129,6 @@ public class SetupPlayer : NetworkBehaviour
         NetworkIdentity netPlayer = NetworkClient.connection.identity;
         Debug.Log("Asignando posición al jugador: " + netPlayer.GetComponentInParent<PlayerInfo>().ID);
         int pos = m_PolePositionManager.ordenSalida.IndexOf(NetworkClient.connection.identity.GetComponent<PlayerInfo>().ID);
-        FindObjectOfType<ParentCheck>().clasificacion = false;
 
         if (pos == -1)
         {
@@ -138,6 +140,10 @@ public class SetupPlayer : NetworkBehaviour
         netPlayer.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
         netPlayer.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
         FindObjectOfType<ParentCheck>().RestartCheckpoints();
+        netPlayer.GetComponent<PlayerInfo>().lap = 1;
+        FindObjectOfType<ParentCheck>().clasificacion = false;
+        FindObjectOfType<PoleNetworkManager>().clasif = false;
+        FindObjectOfType<UIManager>().UpdateLaps();
         foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
         {
             if (player.hasAuthority) continue;

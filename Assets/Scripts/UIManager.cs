@@ -22,9 +22,9 @@ public class UIManager : NetworkBehaviour
     
     public int carSelection { set { ChangeCar(value); } }
 
-    public bool nextLap = false;
-    public int CurrentLap = 0;
-    public int MaxLap = 3;
+    public bool nextLap;
+    public int CurrentLap;
+    public int MaxLap;
 
     
 
@@ -38,6 +38,8 @@ public class UIManager : NetworkBehaviour
     public TMP_Text[] playerNameTexts = new TMP_Text[4];
     public TMP_Text[] playerReadyTexts = new TMP_Text[4];
     [SerializeField] private Button buttonReturn;
+    public GameObject lapsObject;
+    public InputField inputLaps;
     //For Chat
     public InputField chatMessage;
     public Text chatHistory;
@@ -72,6 +74,8 @@ public class UIManager : NetworkBehaviour
         }
         if (SceneManager.GetActiveScene().name == "GameScene") {
             startTime = NetworkTime.time;
+            textLaps.text = "Lap 1/1";
+            nextLap = false;
             m_PositionManager = FindObjectOfType<PolePositionManager>();            
         }
     }
@@ -95,21 +99,6 @@ public class UIManager : NetworkBehaviour
             ready = true;
         }
         return;
-    }
-
-    public void UpdateLaps(){
-        CurrentLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().lap;
-        MaxLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().maxLap;
-        textLaps.text = "Lap "+CurrentLap+"/"+MaxLap;
-    }
-    public void UpdateSpeed(int speed)
-    {
-        textSpeed.text = "Speed " + speed + " Km/h";
-    }
-
-    public void UpdatePositions(string myRaceOrder)
-    {
-        textPosition.text = myRaceOrder;
     }
 
     public void ActivateMainMenu()
@@ -207,33 +196,6 @@ public class UIManager : NetworkBehaviour
         }
     }
 
-    private void UpdateGameGUI()
-    {   
-        if(NetworkClient.connection.identity.GetComponent<SetupPlayer>().raceStart){
-            if(nextLap) {
-                UpdateLaps();
-                nextLap = false;
-            }
-            if(Semaphore.text == "go!" && (int)m_PositionManager.time.t == 1)
-            {
-                Semaphore.text = "";
-            }
-            m_PositionManager.time.UpdateTimer();
-            textTime.text = m_PositionManager.time.timerText;
-        }
-        else{
-            t = (NetworkTime.time - startTime)%60;
-            if(t >= 2){                
-                    Semaphore.text = "" + (5 -  (int)t);
-                if (t >= 5)
-                {
-                    Semaphore.text = "go!";
-                    NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdStartRace();
-                }
-            }
-        }
-    }
-
     private void UpdateRoomGUI()
     {
         foreach (TMP_Text field in playerNameTexts)
@@ -274,6 +236,26 @@ public class UIManager : NetworkBehaviour
                 playerReadyTexts[i].text = "<color=red>Not Ready</color>";
             }
         }
+    }
+
+    public void SetLapsOnPlayer()
+    {
+        if (inputLaps.text.Trim() == "")
+        {
+            m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdSetMaxLap(3);
+            return;
+        }
+
+        int num = Int16.Parse(inputLaps.text.Trim());
+        if (num == 3)
+            return;
+
+        if (num < 3)
+        {
+            m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdSetMaxLap(3);
+            return;
+        }
+        m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdSetMaxLap(num);
     }
 
     //Chat
@@ -321,5 +303,58 @@ public class UIManager : NetworkBehaviour
 
     #endregion
 
+    #region GameRoom
+
+    private void UpdateGameGUI()
+    {
+        if (NetworkClient.connection == null) return;
+
+        if (NetworkClient.connection.identity.GetComponent<SetupPlayer>().raceStart)
+        {
+            if (!m_NetworkManager.clasif)
+            {
+                UpdateLaps();
+                nextLap = false;
+            }
+            if (Semaphore.text == "go!" && (int)m_PositionManager.time.t >= 1)
+            {
+                Semaphore.text = "";
+            }
+            m_PositionManager.time.UpdateTimer();
+            textTime.text = m_PositionManager.time.timerText;
+        }
+        else
+        {
+            t = (NetworkTime.time - startTime) % 60;
+            if (t >= 2)
+            {
+                Semaphore.text = "" + (5 - (int)t);
+                if (t >= 5)
+                {
+                    Semaphore.text = "go!";
+                    NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdStartRace();
+                }
+            }
+        }
+    }
+
+    public void UpdateLaps()
+    {
+        CurrentLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().lap;
+        MaxLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().maxLap;
+        if(CurrentLap <= MaxLap)
+            textLaps.text = "Lap " + CurrentLap + "/" + MaxLap;
+    }
+    public void UpdateSpeed(int speed)
+    {
+        textSpeed.text = "Speed " + speed + " Km/h";
+    }
+
+    public void UpdatePositions(string myRaceOrder)
+    {
+        textPosition.text = myRaceOrder;
+    }
+
+    #endregion
 }
 

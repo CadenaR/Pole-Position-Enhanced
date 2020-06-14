@@ -37,6 +37,9 @@ public class PoleNetworkManager : NetworkRoomManager
             : Instantiate(spawnPrefabs[roomPlayer.GetComponent<PoleRoomPlayer>().SelectedCar], Vector3.zero, Quaternion.identity);
         gamePlayer.name = playerPrefab.name;
         gamePlayer.GetComponent<PlayerInfo>().Name = roomPlayer.GetComponent<PoleRoomPlayer>().Name;
+        gamePlayer.GetComponent<PlayerInfo>().lap = 1;
+        int totalLaps = roomSlots[0].GetComponent<PoleRoomPlayer>().maxLap; 
+        gamePlayer.GetComponent<PlayerInfo>().maxLap = totalLaps == null ? 3 : totalLaps < 3 ? 3 : totalLaps;
 
         return gamePlayer;
     }

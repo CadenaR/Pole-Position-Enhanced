@@ -9,8 +9,9 @@ public class PlayerInfo : NetworkBehaviour
     public string Name;
 
     [SyncVar]
-    public int lap = 1;
+    public int lap;
 
+    [SyncVar]
     public int maxLap;
     
     [SyncVar]
@@ -26,17 +27,6 @@ public class PlayerInfo : NetworkBehaviour
     public override string ToString()
     {
         return Name;
-    }
-
-    public void Start(){
-        lap = 1;
-        maxLap = 3;
-        if (hasAuthority)
-        {
-            FindObjectOfType<UIManager>().CurrentLap = lap;
-            FindObjectOfType<UIManager>().MaxLap = maxLap;
-        }
-
     }
 
     #region Command
