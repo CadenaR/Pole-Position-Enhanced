@@ -19,27 +19,7 @@ public class SetupPlayer : NetworkBehaviour
     public PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     public PolePositionManager m_PolePositionManager;
-    public bool m_raceStart;
-    public bool raceStart
-    {
-        get { return m_raceStart; }
-        set
-        {
-            m_raceStart = value;
-            if (hasAuthority)
-            {
-                if (value)
-                {
-                    m_PlayerController.enabled = true;
-                    
-                }
-                else
-                {
-                    m_PlayerController.enabled = false;
-                }
-            }            
-        }
-    }
+    public bool raceStart;
 
     public GameObject carBody;
     public GameObject carWheelFR;
@@ -98,6 +78,7 @@ public class SetupPlayer : NetworkBehaviour
         if (hasAuthority)
         {
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
+            m_PlayerController.enabled = true;
             AppearCar();
             ConfigureCamera();
         }
@@ -148,10 +129,9 @@ public class SetupPlayer : NetworkBehaviour
     #region ClientRpc
     [ClientRpc]
     public void RpcRestartSpeed(){
-        m_PlayerController.enabled = false;
         FindObjectOfType<UIManager>().startTime = NetworkTime.time;
-        raceStart = false;
         this.GetComponentInParent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+        raceStart = false;
     }
 
     [ClientRpc]
