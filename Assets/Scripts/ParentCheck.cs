@@ -21,7 +21,7 @@ public class ParentCheck : NetworkBehaviour
     {
         //recibir la información del servidor()
 
-        Debug.Log("Checkpoint " + n);
+        //Debug.Log("Checkpoint " + n);
         n++;
         player.GetComponent<PlayerInfo>().CmdSetCheckpoint(n);        
         CheckLap(player);        
@@ -36,7 +36,7 @@ public class ParentCheck : NetworkBehaviour
             Debug.Log("He dado una vuelta");
             if (clasificacion)
             {         
-                Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);           
+                //Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);           
                 player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);                
             }
             player.GetComponent<PlayerInfo>().CmdIncreaseLap();

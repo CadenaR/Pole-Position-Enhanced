@@ -234,7 +234,7 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdSavePos(int Id)
     {
-        UnityEngine.Debug.Log("aaaa");
+        //UnityEngine.Debug.Log("aaaa");
         RpcClientPlayerId(Id);
     }
 
@@ -246,15 +246,16 @@ public class PlayerController : NetworkBehaviour
     [ClientRpc]
     public void RpcClientPlayerId(int Id)
     {
-        UnityEngine.Debug.Log("bbbb");
+        UnityEngine.Debug.Log("El jugador " + Id + " ha dado una vuelta.");
         FindObjectOfType<PolePositionManager>().ordenSalida.Add(Id);
 
         if (FindObjectOfType<PolePositionManager>().ordenSalida.Count >= FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1)
         {
+            UnityEngine.Debug.Log("Empieza la carrera.");
             this.GetComponent<SetupPlayer>().CmdEndClassification();                    
             FindObjectOfType<PoleNetworkManager>().clasif = false;            
         }
-        UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);
+        //UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);
     }
 
     #endregion

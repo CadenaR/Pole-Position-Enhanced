@@ -63,7 +63,7 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     [ClientRpc]
     public void RpcReceive(string message)
     {
-        OnMessage(this, message);
+        OnMessage?.Invoke(this, message);
     }
 
     #endregion

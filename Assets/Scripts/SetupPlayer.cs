@@ -120,7 +120,7 @@ public class SetupPlayer : NetworkBehaviour
         
         if(pos == -1)
         {
-            pos = 3;            
+            pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;            
         }
 
         RpcRestartPosition(pos);        

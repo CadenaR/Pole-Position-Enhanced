@@ -81,7 +81,7 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         //m_Players.Sort(new PlayerInfoComparer(arcLengths));
-        Debug.Log("Jugadores " + m_Players.Count);
+        //Debug.Log("Jugadores " + m_Players.Count);
         string myRaceOrder = "";
         int playerPlace = 1;
         foreach (var _player in m_Players)
