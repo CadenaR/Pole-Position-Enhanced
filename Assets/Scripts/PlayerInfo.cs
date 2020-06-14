@@ -11,7 +11,7 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar]
     public int lap = 1;
 
-    public int maxLap = 3;
+    public int maxLap;
     
     [SyncVar]
     public int checkpoint = 0;
@@ -26,6 +26,17 @@ public class PlayerInfo : NetworkBehaviour
     public override string ToString()
     {
         return Name;
+    }
+
+    public void Start(){
+        lap = 1;
+        maxLap = 3;
+        if (hasAuthority)
+        {
+            FindObjectOfType<UIManager>().CurrentLap = lap;
+            FindObjectOfType<UIManager>().MaxLap = maxLap;
+        }
+
     }
 
     #region Command
@@ -46,21 +57,6 @@ public class PlayerInfo : NetworkBehaviour
         checkpoint = c;
     }
 
-    [Command]
-    public void CmdSetMaxLap(int lap)
-    {
-        RpcSetMaxLap(lap);
-    }
-
-    #endregion
-
-    #region ClientRpc
-
-    [ClientRpc]
-    public void RpcSetMaxLap(int lap)
-    {
-        maxLap = lap;
-    }
 
     #endregion
 }

@@ -22,8 +22,7 @@ public class UIManager : NetworkBehaviour
     
     public int carSelection { set { ChangeCar(value); } }
 
-    //public int CurrentLap = NetworkClient.connection.identity.GetComponent<PoleRoomPlayer>().GetComponent<PlayerInfo>().lap;
-    //public int MaxLap = NetworkClient.connection.identity.GetComponent<PoleRoomPlayer>().GetComponent<PlayerInfo>().maxLap;
+    public bool nextLap = false;
     public int CurrentLap = 0;
     public int MaxLap = 3;
 
@@ -73,7 +72,7 @@ public class UIManager : NetworkBehaviour
         }
         if (SceneManager.GetActiveScene().name == "GameScene") {
             startTime = NetworkTime.time;
-            m_PositionManager = FindObjectOfType<PolePositionManager>();
+            m_PositionManager = FindObjectOfType<PolePositionManager>();            
         }
     }
 
@@ -99,6 +98,8 @@ public class UIManager : NetworkBehaviour
     }
 
     public void UpdateLaps(){
+        CurrentLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().lap;
+        MaxLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().maxLap;
         textLaps.text = "Lap "+CurrentLap+"/"+MaxLap;
     }
     public void UpdateSpeed(int speed)
@@ -209,7 +210,10 @@ public class UIManager : NetworkBehaviour
     private void UpdateGameGUI()
     {   
         if(NetworkClient.connection.identity.GetComponent<SetupPlayer>().raceStart){
-            UpdateLaps();//funciona???
+            if(nextLap) {
+                UpdateLaps();
+                nextLap = false;
+            }
             if(Semaphore.text == "go!" && (int)m_PositionManager.time.t == 1)
             {
                 Semaphore.text = "";

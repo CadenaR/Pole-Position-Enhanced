@@ -33,11 +33,14 @@ public class ParentCheck : NetworkBehaviour
     {
         if (n == 12)
         {
-            Debug.Log("He dado una vuelta");
+            Debug.Log("He dado una vuelta");            
             if (clasificacion)
             {         
                 //Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);           
                 player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);                
+            }
+            else{
+                FindObjectOfType<UIManager>().nextLap = true;
             }
             player.GetComponent<PlayerInfo>().CmdIncreaseLap();
             n = 0;

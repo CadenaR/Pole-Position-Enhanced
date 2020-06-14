@@ -14,6 +14,8 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public int SelectedCar;
 
+    public int maxLap;
+
     public static event Action<PoleRoomPlayer, string> OnMessage;
 
     public override void OnStartClient()
@@ -55,7 +57,13 @@ public class PoleRoomPlayer : NetworkRoomPlayer
         if (message.Trim() != "")
             RpcReceive(message.Trim());
     }
-    
+
+    [Command]
+    public void CmdSetMaxLap(int lap)
+    {
+        RpcSetMaxLap(lap);
+    }
+
     #endregion
 
     #region ClientRpc
@@ -64,6 +72,12 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     public void RpcReceive(string message)
     {
         OnMessage?.Invoke(this, message);
+    }
+
+    [ClientRpc]
+    public void RpcSetMaxLap(int lap)
+    {
+        NetworkClient.connection.identity.GetComponent<PoleRoomPlayer>().maxLap = lap;
     }
 
     #endregion
