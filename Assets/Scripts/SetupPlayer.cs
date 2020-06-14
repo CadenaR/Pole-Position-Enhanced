@@ -131,11 +131,12 @@ public class SetupPlayer : NetworkBehaviour
     #region ClientRpc
     [ClientRpc]
     public void RpcRestartPosition(int pos){
+        Debug.Log("Asignando posición");
         FindObjectOfType<UIManager>().startTime = NetworkTime.time;
         raceStart = false;
-        this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-        this.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
-        this.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
+        NetworkClient.connection.identity.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+        NetworkClient.connection.identity.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
+        NetworkClient.connection.identity.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
         foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
         {
             if (player.hasAuthority) continue;
