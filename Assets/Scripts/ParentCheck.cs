@@ -9,7 +9,7 @@ public class ParentCheck : NetworkBehaviour
     private List<GameObject> Checkpoints = new List<GameObject>();
     int n = 0;
 
-    bool clasificacion;
+    public bool clasificacion;
 
     private void Awake()
     {
@@ -35,10 +35,9 @@ public class ParentCheck : NetworkBehaviour
         {
             Debug.Log("He dado una vuelta");
             if (clasificacion)
-            {                    
-                Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);
-                player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);
-                player.GetComponent<SetupPlayer>().CmdEndClassification();
+            {         
+                Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);           
+                player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);                
             }
             player.GetComponent<PlayerInfo>().CmdIncreaseLap();
             n = 0;

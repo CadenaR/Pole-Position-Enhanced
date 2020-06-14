@@ -68,14 +68,11 @@ public class PlayerController : NetworkBehaviour
             InputAcceleration = Input.GetAxis("Vertical");
             InputSteering = Input.GetAxis(("Horizontal"));
             InputBrake = Input.GetAxis("Jump");
-            Speed = m_Rigidbody.velocity.magnitude;
-            Debug.Log("gasgwtyway");
+            Speed = m_Rigidbody.velocity.magnitude;            
     }
 
     public void FixedUpdate()
-    {
-        
-        Debug.Log("agoh");
+    {   
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
         
@@ -237,29 +234,27 @@ public class PlayerController : NetworkBehaviour
     [Command]
     public void CmdSavePos(int Id)
     {
-        RpcClientPlayerId(Id);        
+        UnityEngine.Debug.Log("aaaa");
+        RpcClientPlayerId(Id);
     }
 
-    [Command]
-    public void CmdChangeScene(string Scene)
-    {
-        //REINICIAR ESCENA
-        //FindObjectOfType<PoleNetworkManager>().ServerChangeScene(Scene);
-    }
     #endregion
+
 
     #region RPC
     
     [ClientRpc]
     public void RpcClientPlayerId(int Id)
     {
+        UnityEngine.Debug.Log("bbbb");
         FindObjectOfType<PolePositionManager>().ordenSalida.Add(Id);
 
-        if (FindObjectOfType<PolePositionManager>().ordenSalida.Count == FindObjectOfType<PoleNetworkManager>().roomSlots.Count)
+        if (FindObjectOfType<PolePositionManager>().ordenSalida.Count >= FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1)
         {
-            FindObjectOfType<PoleNetworkManager>().clasif = false;
-            CmdChangeScene(SceneManager.GetActiveScene().name);
+            this.GetComponent<SetupPlayer>().CmdEndClassification();                    
+            FindObjectOfType<PoleNetworkManager>().clasif = false;            
         }
+        UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);
     }
 
     #endregion

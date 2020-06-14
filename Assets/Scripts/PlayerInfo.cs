@@ -10,6 +10,8 @@ public class PlayerInfo : NetworkBehaviour
 
     [SyncVar]
     public int lap = 1;
+
+    public int maxLap = 3;
     
     [SyncVar]
     public int checkpoint = 0;
@@ -26,10 +28,16 @@ public class PlayerInfo : NetworkBehaviour
         return Name;
     }
 
+    #region Command
+
     [Command]
     public void CmdIncreaseLap()
     {
-        lap++;
+        if(lap <= maxLap){
+            lap++;
+        }else{
+            //acabar carrera;
+        }
     }
 
     [Command]
@@ -37,4 +45,22 @@ public class PlayerInfo : NetworkBehaviour
     {
         checkpoint = c;
     }
+
+    [Command]
+    public void CmdSetMaxLap(int lap)
+    {
+        RpcSetMaxLap(lap);
+    }
+
+    #endregion
+
+    #region ClientRpc
+
+    [ClientRpc]
+    public void RpcSetMaxLap(int lap)
+    {
+        maxLap = lap;
+    }
+
+    #endregion
 }

@@ -21,6 +21,12 @@ public class UIManager : NetworkBehaviour
     public string playerName { get; set; }
     
     public int carSelection { set { ChangeCar(value); } }
+
+    //public int CurrentLap = NetworkClient.connection.identity.GetComponent<PoleRoomPlayer>().GetComponent<PlayerInfo>().lap;
+    //public int MaxLap = NetworkClient.connection.identity.GetComponent<PoleRoomPlayer>().GetComponent<PlayerInfo>().maxLap;
+    public int CurrentLap = 0;
+    public int MaxLap = 3;
+
     
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
@@ -92,6 +98,9 @@ public class UIManager : NetworkBehaviour
         return;
     }
 
+    public void UpdateLaps(){
+        textLaps.text = "Lap "+CurrentLap+"/"+MaxLap;
+    }
     public void UpdateSpeed(int speed)
     {
         textSpeed.text = "Speed " + speed + " Km/h";
@@ -200,6 +209,7 @@ public class UIManager : NetworkBehaviour
     private void UpdateGameGUI()
     {   
         if(NetworkClient.connection.identity.GetComponent<SetupPlayer>().raceStart){
+            UpdateLaps();//funciona???
             if(Semaphore.text == "go!" && (int)m_PositionManager.time.t == 1)
             {
                 Semaphore.text = "";
