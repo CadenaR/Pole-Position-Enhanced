@@ -79,7 +79,7 @@ public class PlayerController : NetworkBehaviour
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
         
-        if (FindObjectOfType<SetupPlayer>().raceStart)
+        if (this.GetComponent<SetupPlayer>().raceStart)
         {
             InputBrake = Mathf.Clamp(InputBrake, 0, 1);
         }

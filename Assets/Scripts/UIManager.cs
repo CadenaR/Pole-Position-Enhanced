@@ -32,6 +32,7 @@ public class UIManager : NetworkBehaviour
     [Header("Room Menu")]
     public TMP_Text[] playerNameTexts = new TMP_Text[4];
     public TMP_Text[] playerReadyTexts = new TMP_Text[4];
+    [SerializeField] private Button buttonReturn;
     //For Chat
     public InputField chatMessage;
     public Text chatHistory;
@@ -61,7 +62,9 @@ public class UIManager : NetworkBehaviour
         buttonServer.onClick.AddListener(() => StartServer());
 
         if (SceneManager.GetActiveScene().name == "RoomScene")
-            PoleRoomPlayer.OnMessage += OnPlayerMessage;
+        {
+            buttonReturn.onClick.AddListener(() => GoBack());
+        }
         if (SceneManager.GetActiveScene().name == "GameScene") {
             startTime = NetworkTime.time;
             m_PositionManager = FindObjectOfType<PolePositionManager>();
@@ -136,6 +139,18 @@ public class UIManager : NetworkBehaviour
         ActivateInGameHUD();
     }
 
+    public void GoBack()
+    {
+        if (NetworkClient.connection.identity.isServer)
+        {
+            m_NetworkManager.StopHost();
+        }
+        else
+        {
+            m_NetworkManager.StopClient();
+        }
+    }
+
     #region Room
     public void ChangeName()
     {
@@ -192,7 +207,7 @@ public class UIManager : NetworkBehaviour
             m_PositionManager.time.UpdateTimer();
             textTime.text = m_PositionManager.time.timerText;
         }
-        else if (!FindObjectOfType<SetupPlayer>().stop){
+        else{
             t = (NetworkTime.time - startTime)%60;
             if(t >= 2){                
                     Semaphore.text = "" + (5 -  (int)t);
@@ -248,7 +263,7 @@ public class UIManager : NetworkBehaviour
     }
 
     //Chat
-    private void OnPlayerMessage(PoleRoomPlayer player, string message)
+    public void OnPlayerMessage(PoleRoomPlayer player, string message)
     {
         string prettyMessage = player.isLocalPlayer ?
             $"<color=red>You: </color> {message}" :

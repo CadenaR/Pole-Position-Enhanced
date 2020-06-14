@@ -16,11 +16,12 @@ public class PoleRoomPlayer : NetworkRoomPlayer
 
     public static event Action<PoleRoomPlayer, string> OnMessage;
 
-
     public override void OnStartClient()
     {
         if (LogFilter.Debug) Debug.LogFormat("OnStartClient {0}", SceneManager.GetActiveScene().path);
         CmdChangeName("Player Joining...");
+        OnMessage = null;
+        OnMessage += FindObjectOfType<UIManager>().OnPlayerMessage;
         base.OnStartClient();
     }
 
@@ -62,7 +63,7 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     [ClientRpc]
     public void RpcReceive(string message)
     {
-        OnMessage?.Invoke(this, message);
+        OnMessage(this, message);
     }
 
     #endregion

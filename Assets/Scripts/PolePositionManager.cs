@@ -80,8 +80,8 @@ public class PolePositionManager : NetworkBehaviour
             arcLengths[i] = ComputeCarArcLength(i);
         }
 
-        m_Players.Sort(new PlayerInfoComparer(arcLengths));
-
+        //m_Players.Sort(new PlayerInfoComparer(arcLengths));
+        Debug.Log("Jugadores " + m_Players.Count);
         string myRaceOrder = "";
         int playerPlace = 1;
         foreach (var _player in m_Players)

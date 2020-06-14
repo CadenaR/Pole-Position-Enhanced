@@ -13,7 +13,6 @@ public class SetupPlayer : NetworkBehaviour
     [SyncVar] private int m_ID;
     [SyncVar] private string m_Name;
 
-    public bool stop = false;
     private UIManager m_UIManager;
     private PoleNetworkManager m_NetworkManager;
     public PlayerController m_PlayerController;
@@ -116,22 +115,19 @@ public class SetupPlayer : NetworkBehaviour
     public void CmdEndClassification()
     {
         //int pos = m_PolePositionManager.ordenSalida.IndexOf(this.GetComponentInParent<PlayerInfo>().ID);
-        stop = true;
-        RpcRestartSpeed();
-        this.GetComponentInParent<Transform>().position = NetworkManager.startPositions[3].position;
-        this.GetComponentInParent<Transform>().rotation = NetworkManager.startPositions[3].rotation;
-        stop = false;
-
+        RpcRestartPosition();
     }
 
     #endregion
 
     #region ClientRpc
     [ClientRpc]
-    public void RpcRestartSpeed(){
+    public void RpcRestartPosition(){
         FindObjectOfType<UIManager>().startTime = NetworkTime.time;
-        this.GetComponentInParent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         raceStart = false;
+        this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+        this.GetComponent<Transform>().position = NetworkManager.startPositions[3].position;
+        this.GetComponent<Transform>().rotation = NetworkManager.startPositions[3].rotation;
     }
 
     [ClientRpc]
