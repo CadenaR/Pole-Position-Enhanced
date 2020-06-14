@@ -115,23 +115,22 @@ public class SetupPlayer : NetworkBehaviour
     public void CmdEndClassification()
     {
         UnityEngine.Debug.Log("length 1: " + m_PolePositionManager.ordenSalida.Count);
-        int pos = m_PolePositionManager.ordenSalida.IndexOf(this.GetComponentInParent<PlayerInfo>().ID);        
-        FindObjectOfType<ParentCheck>().clasificacion = false;
-        
-        if(pos == -1)
-        {
-            pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;            
-        }
-
-        RpcRestartPosition(pos);        
+        RpcRestartPosition();        
     }
 
     #endregion
 
     #region ClientRpc
     [ClientRpc]
-    public void RpcRestartPosition(int pos){
+    public void RpcRestartPosition(){
         Debug.Log("Asignando posición");
+        int pos = m_PolePositionManager.ordenSalida.IndexOf(this.GetComponentInParent<PlayerInfo>().ID);
+        FindObjectOfType<ParentCheck>().clasificacion = false;
+
+        if (pos == -1)
+        {
+            pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;
+        }
         FindObjectOfType<UIManager>().startTime = NetworkTime.time;
         raceStart = false;
         NetworkClient.connection.identity.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
