@@ -123,19 +123,20 @@ public class SetupPlayer : NetworkBehaviour
     #region ClientRpc
     [ClientRpc]
     public void RpcRestartPosition(){
-        Debug.Log("Asignando posición al jugador: " + NetworkClient.connection.identity.GetComponentInParent<PlayerInfo>().ID);
-        int pos = m_PolePositionManager.ordenSalida.IndexOf(NetworkClient.connection.identity.GetComponentInParent<PlayerInfo>().ID);
-        FindObjectOfType<ParentCheck>().clasificacion = false;
+        NetworkIdentity netPlayer = NetworkClient.connection.identity;
+        Debug.Log("Asignando posición al jugador: " + netPlayer.GetComponentInParent<PlayerInfo>().ID);
+        int pos = m_PolePositionManager.ordenSalida.IndexOf(NetworkClient.connection.identity.GetComponent<PlayerInfo>().ID);
+        //FindObjectOfType<ParentCheck>().clasificacion = false;
 
         if (pos == -1)
         {
             pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;
         }
         FindObjectOfType<UIManager>().startTime = NetworkTime.time;
-        raceStart = false;
-        NetworkClient.connection.identity.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-        NetworkClient.connection.identity.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
-        NetworkClient.connection.identity.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
+        netPlayer.GetComponent<SetupPlayer>().raceStart = false;
+        netPlayer.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+        netPlayer.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
+        netPlayer.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
         foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
         {
             if (player.hasAuthority) continue;

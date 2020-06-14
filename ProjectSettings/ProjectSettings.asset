@@ -625,10 +625,10 @@ PlayerSettings:
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
   apiCompatibilityLevel: 6
-  cloudProjectId: 08f88d1b-945e-4e3d-a31c-d0cf73bc6dda
+  cloudProjectId: 
   framebufferDepthMemorylessMode: 0
-  projectName: RacingProto
-  organizationId: cadena-25
+  projectName: 
+  organizationId: 
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
