@@ -123,8 +123,8 @@ public class SetupPlayer : NetworkBehaviour
     #region ClientRpc
     [ClientRpc]
     public void RpcRestartPosition(){
-        Debug.Log("Asignando posición");
-        int pos = m_PolePositionManager.ordenSalida.IndexOf(this.GetComponentInParent<PlayerInfo>().ID);
+        Debug.Log("Asignando posición al jugador: " + NetworkClient.connection.identity.GetComponentInParent<PlayerInfo>().ID);
+        int pos = m_PolePositionManager.ordenSalida.IndexOf(NetworkClient.connection.identity.GetComponentInParent<PlayerInfo>().ID);
         FindObjectOfType<ParentCheck>().clasificacion = false;
 
         if (pos == -1)
