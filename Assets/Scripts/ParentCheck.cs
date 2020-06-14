@@ -21,7 +21,7 @@ public class ParentCheck : NetworkBehaviour
     {
         //recibir la información del servidor()
 
-        //Debug.Log("Checkpoint " + n);
+        Debug.Log("Checkpoint " + n);
         n++;
         player.GetComponent<PlayerInfo>().CmdSetCheckpoint(n);        
         CheckLap(player);        
@@ -42,5 +42,12 @@ public class ParentCheck : NetworkBehaviour
             player.GetComponent<PlayerInfo>().CmdIncreaseLap();
             n = 0;
         }
+    }
+
+    public void RestartCheckpoints ()
+    {
+        Checkpoints[n%11].SetActive(false);
+        n = 0;
+        Checkpoints[0].SetActive(true);
     }
 }

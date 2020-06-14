@@ -126,7 +126,7 @@ public class SetupPlayer : NetworkBehaviour
         NetworkIdentity netPlayer = NetworkClient.connection.identity;
         Debug.Log("Asignando posición al jugador: " + netPlayer.GetComponentInParent<PlayerInfo>().ID);
         int pos = m_PolePositionManager.ordenSalida.IndexOf(NetworkClient.connection.identity.GetComponent<PlayerInfo>().ID);
-        //FindObjectOfType<ParentCheck>().clasificacion = false;
+        FindObjectOfType<ParentCheck>().clasificacion = false;
 
         if (pos == -1)
         {
@@ -137,6 +137,7 @@ public class SetupPlayer : NetworkBehaviour
         netPlayer.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         netPlayer.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
         netPlayer.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
+        FindObjectOfType<ParentCheck>().RestartCheckpoints();
         foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
         {
             if (player.hasAuthority) continue;
