@@ -93,7 +93,7 @@ public class SetupPlayer : NetworkBehaviour
         if (Camera.main != null) Camera.main.gameObject.GetComponent<CameraController>().m_Focus = this.gameObject;
     }
 
-    void AppearCar()
+    public void AppearCar()
     {
         this.GetComponentInParent<BoxCollider>().isTrigger = false;
         carBody.GetComponent<Renderer>().enabled = true;
@@ -136,6 +136,11 @@ public class SetupPlayer : NetworkBehaviour
         this.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
         this.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
         this.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
+        foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
+        {
+            if (player.hasAuthority) continue;
+            player.AppearCar();
+        }
     }
 
     [ClientRpc]
