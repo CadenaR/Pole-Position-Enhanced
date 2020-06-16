@@ -47,7 +47,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartClient();
         m_PlayerInfo.ID = m_ID;
-        m_PlayerInfo.CurrentLap = 0;
+        m_PlayerInfo.lap = 0;
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
     }
 

@@ -20,9 +20,10 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar]
     public int ID;
 
-    public int CurrentPosition { get; set; }
+    Timer playerTimer;
 
-    public int CurrentLap { get; set; }
+    public int CurrentPosition { get; set; }
+    
 
     public override string ToString()
     {
@@ -34,10 +35,16 @@ public class PlayerInfo : NetworkBehaviour
     [Command]
     public void CmdIncreaseLap()
     {
-        if(lap <= maxLap){
+        playerTimer = FindObjectOfType<PolePositionManager>().time;
+        if(lap <= maxLap){            
+            playerTimer.SaveTime(FindObjectOfType<PlayerInfo>().lap);
+            Debug.Log(playerTimer.TimeToText(playerTimer.lapTime[playerTimer.lapTime.Count-1]));
             lap++;
-        }else{
-            //acabar carrera;
+        }
+        if (lap > maxLap)
+        {
+            Debug.Log(playerTimer.TimeToText(playerTimer.SaveTotalTime()));
+            Debug.Log("Has terminado la carrera.");
         }
     }
 

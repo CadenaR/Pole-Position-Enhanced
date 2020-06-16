@@ -16,6 +16,7 @@ public class PolePositionManager : NetworkBehaviour
     public List<int> ordenSalida = new List<int>();
     //public SyncListOrder ordenSalida = new SyncListOrder();
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
+    private List<PlayerInfo> m_Players_Clone = new List<PlayerInfo>(4);
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
     public bool startRace = false;
@@ -35,9 +36,9 @@ public class PolePositionManager : NetworkBehaviour
 
     private void Update()
     {   
-        if (m_Players.Count == 0)
+        if (m_Players.Count == 0){
             return;
-
+        }
         UpdateRaceProgress();
         
     }
@@ -45,6 +46,7 @@ public class PolePositionManager : NetworkBehaviour
     public void AddPlayer(PlayerInfo player)
     {
         m_Players.Add(player);
+        m_Players_Clone.Add(player);
     }
 
     private class PlayerInfoComparer : Comparer<PlayerInfo>
@@ -80,11 +82,11 @@ public class PolePositionManager : NetworkBehaviour
             arcLengths[i] = ComputeCarArcLength(i);
         }
 
-        //m_Players.Sort(new PlayerInfoComparer(arcLengths));
+        m_Players_Clone.Sort(new PlayerInfoComparer(arcLengths));
         //Debug.Log("Jugadores " + m_Players.Count);
         string myRaceOrder = "";
         int playerPlace = 1;
-        foreach (var _player in m_Players)
+        foreach (var _player in m_Players_Clone)
         {
             myRaceOrder += playerPlace + "° " +  _player.Name + "\n ";
             playerPlace++;
@@ -110,14 +112,14 @@ public class PolePositionManager : NetworkBehaviour
 
         this.m_DebuggingSpheres[ID].transform.position = carProj;
 
-        if (this.m_Players[ID].CurrentLap == 0)
+        if (this.m_Players[ID].lap == 1)
         {
-            minArcL -= m_CircuitController.CircuitLength;
+            minArcL += m_CircuitController.CircuitLength;
         }
         else
         {
             minArcL += m_CircuitController.CircuitLength *
-                       (m_Players[ID].CurrentLap - 1);
+                    (m_Players[ID].lap);
         }
 
         return minArcL;

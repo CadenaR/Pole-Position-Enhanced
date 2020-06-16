@@ -50,7 +50,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private Text textTime;
     [SerializeField] private Text textSpeed;
     [SerializeField] private Text textLaps;
-    [SerializeField] private Text textPosition;
+    [SerializeField] public Text textPosition;
     [SerializeField] private Text Semaphore;
 
     public bool ready = false;
@@ -74,7 +74,8 @@ public class UIManager : NetworkBehaviour
         }
         if (SceneManager.GetActiveScene().name == "GameScene") {
             startTime = NetworkTime.time;
-            textLaps.text = "Lap 1/1";
+            textLaps.text = "Clasif.";
+            textPosition.transform.parent.gameObject.SetActive(false);
             nextLap = false;
             m_PositionManager = FindObjectOfType<PolePositionManager>();            
         }
@@ -314,7 +315,6 @@ public class UIManager : NetworkBehaviour
             if (!m_NetworkManager.clasif)
             {
                 UpdateLaps();
-                nextLap = false;
             }
             if (Semaphore.text == "go!" && (int)m_PositionManager.time.t >= 1)
             {

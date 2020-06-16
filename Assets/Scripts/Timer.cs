@@ -7,8 +7,10 @@ public class Timer
 {
     float startTime;
     public string timerText;
-    public string[] lapTime;
+    public List<float> lapTime = new List<float>();
     public float t;
+
+    public float total;
 
     void Start()
     {
@@ -19,11 +21,16 @@ public class Timer
     public void UpdateTimer()
     {
         t = (float)NetworkTime.time - startTime;
+        timerText = TimeToText(t);
+    }
+
+    public string TimeToText(float t){
         string minutes = ((int)t / 60).ToString("00");
         string seconds = ((int)t % 60).ToString("00");
         string milliseconds = ((int)(t * 1000) % 1000).ToString("000"); ;
 
-        timerText = minutes + " : " + seconds + " : " + milliseconds;
+        string timerText = minutes + " : " + seconds + " : " + milliseconds;
+        return timerText;
     }
 
     public void ResetTimer()
@@ -31,8 +38,23 @@ public class Timer
         startTime = (float)NetworkTime.time;
     }
 
+    public float SaveTotalTime(){
+        total = t;
+        return total;
+    }
+
     public void SaveTime(int lap)
     {
-        lapTime[lap] = timerText;
+        float aux = t;
+        if (lap == 1){
+            lapTime.Add(t);
+        }
+        else{
+            foreach(float lt in lapTime)
+            {
+                aux -= lt;
+            }
+            lapTime.Add(aux);
+        }
     }
 }

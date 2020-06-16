@@ -10,10 +10,12 @@ public class ParentCheck : NetworkBehaviour
     int n = 0;
 
     public bool clasificacion;
+    bool first = true;
 
     private void Awake()
     {
         clasificacion = FindObjectOfType<PoleNetworkManager>().clasif;
+        
     }
 
 
@@ -21,7 +23,7 @@ public class ParentCheck : NetworkBehaviour
     {
         //recibir la información del servidor()
 
-        Debug.Log("Checkpoint " + n);
+        //Debug.Log("Checkpoint " + n);
         n++;
         player.GetComponent<PlayerInfo>().CmdSetCheckpoint(n);        
         CheckLap(player);        
@@ -36,16 +38,18 @@ public class ParentCheck : NetworkBehaviour
             Debug.Log("He dado una vuelta");            
             if (clasificacion)
             {         
+                
                 //Debug.Log("Id clasif: " + player.GetComponent<PlayerInfo>().ID);           
                 player.GetComponent<PlayerController>().CmdSavePos(player.GetComponent<PlayerInfo>().ID);
                 n = 0;
                 return;
             }
-            else{
-                FindObjectOfType<UIManager>().nextLap = true;
-            }
             player.GetComponent<PlayerInfo>().CmdIncreaseLap();
             n = 0;
+        }
+        else if(n == 1 && !clasificacion && first){            
+            FindObjectOfType<UIManager>().textPosition.transform.parent.gameObject.SetActive(true);
+            first = false;        
         }
     }
 
