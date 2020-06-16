@@ -27,7 +27,7 @@ public class Timer
     public string TimeToText(float t){
         string minutes = ((int)t / 60).ToString("00");
         string seconds = ((int)t % 60).ToString("00");
-        string milliseconds = ((int)(t * 1000) % 1000).ToString("000"); ;
+        string milliseconds = ((int)(t * 1000) % 1000).ToString("000");
 
         string timerText = minutes + " : " + seconds + " : " + milliseconds;
         return timerText;
