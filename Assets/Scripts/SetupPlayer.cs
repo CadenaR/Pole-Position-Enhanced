@@ -77,7 +77,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         raceStart = false;
 
-        if(classifLap)
+        if(!classifLap)
             AppearCar();
 
         if (hasAuthority)
