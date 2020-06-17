@@ -5,11 +5,12 @@ using System.Collections.Specialized;
 using System.Text;
 using Mirror;
 using UnityEngine;
+using System.Threading;
 
 public class PolePositionManager : NetworkBehaviour
 {
     //public class SyncListOrder : SyncList<int> { }
-
+    public SemaphoreSlim playerArraySemaphore = new SemaphoreSlim(1);
     public int numPlayers;
     public PoleNetworkManager networkManager;    
     public Timer time = new Timer();
@@ -45,8 +46,10 @@ public class PolePositionManager : NetworkBehaviour
 
     public void AddPlayer(PlayerInfo player)
     {
+        playerArraySemaphore.Wait();
         m_Players.Add(player);
         m_Players_Clone.Add(player);
+        playerArraySemaphore.Release();
     }
 
     private class PlayerInfoComparer : Comparer<PlayerInfo>
@@ -79,6 +82,7 @@ public class PolePositionManager : NetworkBehaviour
         // Update car arc-lengths
         float[] arcLengths = new float[m_Players.Count];
 
+        playerArraySemaphore.Wait();
         for (int i = 0; i < m_Players.Count; ++i)
         {
             if(this.m_Players[i] == null)
@@ -91,6 +95,7 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         m_Players_Clone.Sort(new PlayerInfoComparer(arcLengths));
+        playerArraySemaphore.Release();
         //Debug.Log("Jugadores " + m_Players.Count);
         string myRaceOrder = "";
         int playerPlace = 1;
