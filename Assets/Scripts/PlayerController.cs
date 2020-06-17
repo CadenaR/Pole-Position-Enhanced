@@ -247,12 +247,12 @@ public class PlayerController : NetworkBehaviour
     public void RpcClientPlayerId(int Id)
     {
         UnityEngine.Debug.Log("El jugador " + Id + " ha dado una vuelta.");
-        FindObjectOfType<PolePositionManager>().ordenSalida.Add(Id);
+        FindObjectOfType<PolePositionManager>().AddPlayerPosition(Id);
 
-        if (FindObjectOfType<PolePositionManager>().ordenSalida.Count >= FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1)
+        if (FindObjectOfType<PolePositionManager>().raceOrder.Count >= FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1)
         {
             UnityEngine.Debug.Log("Empieza la carrera.");
-            this.GetComponent<SetupPlayer>().CmdEndClassification();                    
+            NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdEndClassification();                    
         }
         //UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);
     }

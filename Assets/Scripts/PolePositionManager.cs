@@ -11,10 +11,11 @@ public class PolePositionManager : NetworkBehaviour
 {
     //public class SyncListOrder : SyncList<int> { }
     public SemaphoreSlim playerArraySemaphore = new SemaphoreSlim(1);
+    public SemaphoreSlim positionOrder = new SemaphoreSlim(1);
     public int numPlayers;
     public PoleNetworkManager networkManager;    
     public Timer time = new Timer();
-    public List<int> ordenSalida = new List<int>();
+    public List<int> raceOrder = new List<int>();
     //public SyncListOrder ordenSalida = new SyncListOrder();
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
     private List<PlayerInfo> m_Players_Clone = new List<PlayerInfo>(4);
@@ -89,6 +90,7 @@ public class PolePositionManager : NetworkBehaviour
             {
                 this.m_Players.RemoveAt(i);
                 this.m_DebuggingSpheres[i].transform.position = new Vector3(0, 0, 0);
+                playerArraySemaphore.Release();
                 return;
             }
             arcLengths[i] = ComputeCarArcLength(i);
@@ -136,5 +138,11 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         return minArcL;
-    }   
+    }  
+
+    public void AddPlayerPosition(int Id){
+        positionOrder.Wait();
+        raceOrder.Add(Id);
+        positionOrder.Release();
+    } 
 }

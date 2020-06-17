@@ -130,7 +130,7 @@ public class SetupPlayer : NetworkBehaviour
     [Command]
     public void CmdEndClassification()
     {
-        UnityEngine.Debug.Log("length 1: " + m_PolePositionManager.ordenSalida.Count);
+        UnityEngine.Debug.Log("length 1: " + m_PolePositionManager.raceOrder.Count);
         RpcRestartPosition();        
     }
 
@@ -146,7 +146,7 @@ public class SetupPlayer : NetworkBehaviour
     public void RpcRestartPosition(){
         NetworkIdentity netPlayer = NetworkClient.connection.identity;
         Debug.Log("Asignando posición al jugador: " + netPlayer.GetComponentInParent<PlayerInfo>().ID);
-        int pos = m_PolePositionManager.ordenSalida.IndexOf(NetworkClient.connection.identity.GetComponent<PlayerInfo>().ID);
+        int pos = m_PolePositionManager.raceOrder.IndexOf(NetworkClient.connection.identity.GetComponent<PlayerInfo>().ID);
 
         if (pos == -1)
         {
