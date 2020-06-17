@@ -12,11 +12,6 @@ public class ParentCheck : NetworkBehaviour
     public bool clasificacion;
     bool first = true;
 
-    private void Awake()
-    {
-        clasificacion = FindObjectOfType<PoleNetworkManager>().clasif;
-        
-    }
 
 
     public void CheckpointTriggered(GameObject player)
@@ -33,6 +28,7 @@ public class ParentCheck : NetworkBehaviour
 
     private void CheckLap(GameObject player)
     {
+        clasificacion = NetworkClient.connection.identity.GetComponent<SetupPlayer>().classifLap;
         if (n == 12)
         {
             Debug.Log("He dado una vuelta");            

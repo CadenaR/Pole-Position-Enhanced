@@ -13,6 +13,9 @@ public class SetupPlayer : NetworkBehaviour
     [SyncVar] private int m_ID;
     [SyncVar] private string m_Name;
 
+    [SyncVar]
+    public bool classifLap;
+
     private UIManager m_UIManager;
     private PoleNetworkManager m_NetworkManager;
     public PlayerController m_PlayerController;
@@ -47,7 +50,6 @@ public class SetupPlayer : NetworkBehaviour
     {
         base.OnStartClient();
         m_PlayerInfo.ID = m_ID;
-        m_PlayerInfo.lap = 0;
         m_PolePositionManager.AddPlayer(m_PlayerInfo);
     }
 
@@ -74,15 +76,26 @@ public class SetupPlayer : NetworkBehaviour
     void Start()
     {
         raceStart = false;
+
+        if(classifLap)
+            AppearCar();
+
         if (hasAuthority)
         {
             FindObjectOfType<ParentCheck>().RestartCheckpoints();
-            FindObjectOfType<PoleNetworkManager>().clasif = true;
-            m_NetworkManager.clasif = true;
             m_PlayerController.OnSpeedChangeEvent += OnSpeedChangeEventHandler;
             m_PlayerController.enabled = true;
             AppearCar();
             ConfigureCamera();
+
+            if(classifLap)
+            {
+                FindObjectOfType<UIManager>().textLaps.text = "Classif.";
+            }
+            else
+            {
+                FindObjectOfType<UIManager>().UpdateLaps();
+            }
         }
     }
 
@@ -121,6 +134,11 @@ public class SetupPlayer : NetworkBehaviour
         RpcRestartPosition();        
     }
 
+    [Command]
+    public void CmdSetClassifLap(bool classif){
+        classifLap = classif;
+    }
+
     #endregion
 
     #region ClientRpc
@@ -141,8 +159,7 @@ public class SetupPlayer : NetworkBehaviour
         netPlayer.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
         FindObjectOfType<ParentCheck>().RestartCheckpoints();
         netPlayer.GetComponent<PlayerInfo>().lap = 1;
-        FindObjectOfType<ParentCheck>().clasificacion = false;
-        FindObjectOfType<PoleNetworkManager>().clasif = false;
+        CmdSetClassifLap(false);
         FindObjectOfType<UIManager>().UpdateLaps();
         foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
         {

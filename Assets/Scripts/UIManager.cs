@@ -44,12 +44,13 @@ public class UIManager : NetworkBehaviour
     public InputField chatMessage;
     public Text chatHistory;
     public Scrollbar scrollbar;
+    public Toggle classifLapToggle;
 
     [Header("In-Game HUD")] [SerializeField]
     private GameObject inGameHUD;
     [SerializeField] private Text textTime;
     [SerializeField] private Text textSpeed;
-    [SerializeField] private Text textLaps;
+    [SerializeField] public Text textLaps;
     [SerializeField] public Text textPosition;
     [SerializeField] private Text Semaphore;
 
@@ -74,7 +75,6 @@ public class UIManager : NetworkBehaviour
         }
         if (SceneManager.GetActiveScene().name == "GameScene") {
             startTime = NetworkTime.time;
-            textLaps.text = "Clasif.";
             textPosition.transform.parent.gameObject.SetActive(false);
             nextLap = false;
             m_PositionManager = FindObjectOfType<PolePositionManager>();            
@@ -193,7 +193,6 @@ public class UIManager : NetworkBehaviour
             {
                 item.CmdChangeReadyState(!item.readyToBegin);
             }
-
         }
     }
 
@@ -248,15 +247,16 @@ public class UIManager : NetworkBehaviour
         }
 
         int num = Int16.Parse(inputLaps.text.Trim());
-        if (num == 3)
-            return;
-
-        if (num < 3)
+        if (num < 1)
         {
-            m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdSetMaxLap(3);
+            m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdSetMaxLap(1);
             return;
         }
         m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdSetMaxLap(num);
+    }
+
+    public void SetClassifLap(){
+        m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdChangeClassifLap();
     }
 
     //Chat
@@ -312,7 +312,7 @@ public class UIManager : NetworkBehaviour
 
         if (NetworkClient.connection.identity.GetComponent<SetupPlayer>().raceStart)
         {
-            if (!m_NetworkManager.clasif)
+            if (!NetworkClient.connection.identity.GetComponent<SetupPlayer>().classifLap)
             {
                 UpdateLaps();
             }
@@ -345,6 +345,7 @@ public class UIManager : NetworkBehaviour
         if(CurrentLap <= MaxLap)
             textLaps.text = "Lap " + CurrentLap + "/" + MaxLap;
     }
+
     public void UpdateSpeed(int speed)
     {
         textSpeed.text = "Speed " + speed + " Km/h";

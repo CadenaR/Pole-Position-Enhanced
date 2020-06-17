@@ -253,7 +253,6 @@ public class PlayerController : NetworkBehaviour
         {
             UnityEngine.Debug.Log("Empieza la carrera.");
             this.GetComponent<SetupPlayer>().CmdEndClassification();                    
-            FindObjectOfType<PoleNetworkManager>().clasif = false;            
         }
         //UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);
     }

@@ -17,6 +17,9 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     [SyncVar]
     public int maxLap;
 
+    [SyncVar]
+    public bool classifLap;
+
     public static event Action<PoleRoomPlayer, string> OnMessage;
 
     public override void OnStartClient()
@@ -25,6 +28,7 @@ public class PoleRoomPlayer : NetworkRoomPlayer
         CmdChangeName("Player Joining...");
         OnMessage = null;
         OnMessage += FindObjectOfType<UIManager>().OnPlayerMessage;
+        classifLap = true;
         base.OnStartClient();
     }
 
@@ -70,6 +74,11 @@ public class PoleRoomPlayer : NetworkRoomPlayer
     public void CmdSetMaxLap(int lap)
     {
         maxLap = lap;
+    }
+
+    [Command]
+    public void CmdChangeClassifLap(){
+        classifLap = !classifLap;
     }
 
     #endregion

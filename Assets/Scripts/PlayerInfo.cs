@@ -9,7 +9,7 @@ public class PlayerInfo : NetworkBehaviour
     public string Name;
 
     [SyncVar]
-    public int lap;
+    public int lap = 1;
 
     [SyncVar]
     public int maxLap;
