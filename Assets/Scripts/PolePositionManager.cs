@@ -68,6 +68,14 @@ public class PolePositionManager : NetworkBehaviour
 
     public void UpdateRaceProgress()
     {
+        for (int i = 0; i < m_Players_Clone.Count; ++i)
+        {
+            if(this.m_Players_Clone[i] == null)
+            {
+                this.m_Players_Clone.RemoveAt(i);
+                return;
+            }
+        }
         // Update car arc-lengths
         float[] arcLengths = new float[m_Players.Count];
 
@@ -80,14 +88,6 @@ public class PolePositionManager : NetworkBehaviour
                 return;
             }
             arcLengths[i] = ComputeCarArcLength(i);
-        }
-
-        for (int i = 0; i < m_Players_Clone.Count; ++i)
-        {
-            if(this.m_Players_Clone[i] == null)
-            {
-                this.m_Players_Clone.RemoveAt(i);
-            }
         }
 
         m_Players_Clone.Sort(new PlayerInfoComparer(arcLengths));
