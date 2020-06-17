@@ -139,10 +139,4 @@ public class PolePositionManager : NetworkBehaviour
 
         return minArcL;
     }  
-
-    public void AddPlayerPosition(int Id){
-        positionOrder.Wait();
-        raceOrder.Add(Id);
-        positionOrder.Release();
-    } 
 }
