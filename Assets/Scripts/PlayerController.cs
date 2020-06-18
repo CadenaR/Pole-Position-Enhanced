@@ -75,17 +75,126 @@ public class PlayerController : NetworkBehaviour
     {   
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
-        
-        if (this.GetComponent<SetupPlayer>().raceStart)
+
+        CmdPlayerMove(InputSteering, InputAcceleration, InputBrake, Speed, this.GetComponent<SetupPlayer>().raceStart);
+
+    }
+
+    #endregion
+
+    #region Methods
+
+    // crude traction control that reduces the power to wheel if the car is wheel spinning too much
+    [Server]
+    private void TractionControl()
+    {
+        foreach (var axleInfo in axleInfos)
         {
-            InputBrake = Mathf.Clamp(InputBrake, 0, 1);
+            WheelHit wheelHitLeft;
+            WheelHit wheelHitRight;
+            axleInfo.leftWheel.GetGroundHit(out wheelHitLeft);
+            axleInfo.rightWheel.GetGroundHit(out wheelHitRight);
+
+            if (wheelHitLeft.forwardSlip >= slipLimit)
+            {
+                var howMuchSlip = (wheelHitLeft.forwardSlip - slipLimit) / (1 - slipLimit);
+                axleInfo.leftWheel.motorTorque -= axleInfo.leftWheel.motorTorque * howMuchSlip * slipLimit;
+            }
+
+            if (wheelHitRight.forwardSlip >= slipLimit)
+            {
+                var howMuchSlip = (wheelHitRight.forwardSlip - slipLimit) / (1 - slipLimit);
+                axleInfo.rightWheel.motorTorque -= axleInfo.rightWheel.motorTorque * howMuchSlip * slipLimit;
+            }
+        }
+    }
+
+// this is used to add more grip in relation to speed
+    [Server]
+    private void AddDownForce()
+    {
+        foreach (var axleInfo in axleInfos)
+        {
+            axleInfo.leftWheel.attachedRigidbody.AddForce(
+                -transform.up * (downForce * axleInfo.leftWheel.attachedRigidbody.velocity.magnitude));
+        }
+    }
+
+    [Server]
+    private void SpeedLimiter()
+    {
+        float speed = m_Rigidbody.velocity.magnitude;
+        if (speed > topSpeed)
+            m_Rigidbody.velocity = topSpeed * m_Rigidbody.velocity.normalized;
+    }
+
+// finds the corresponding visual wheel
+// correctly applies the transform
+    public void ApplyLocalPositionToVisuals(WheelCollider col)
+    {
+        if (col.transform.childCount == 0)
+        {
+            return;
+        }
+
+        Transform visualWheel = col.transform.GetChild(0);
+        Vector3 position;
+        Quaternion rotation;
+        col.GetWorldPose(out position, out rotation);
+        var myTransform = visualWheel.transform;
+        myTransform.position = position;
+        myTransform.rotation = rotation;
+    }
+
+    [Server]
+    private void SteerHelper()
+    {
+        foreach (var axleInfo in axleInfos)
+        {
+            WheelHit[] wheelHit = new WheelHit[2];
+            axleInfo.leftWheel.GetGroundHit(out wheelHit[0]);
+            axleInfo.rightWheel.GetGroundHit(out wheelHit[1]);
+            foreach (var wh in wheelHit)
+            {
+                if (wh.normal == Vector3.zero)
+                    return; // wheels arent on the ground so dont realign the rigidbody velocity
+            }
+        }
+
+// this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
+        if (Mathf.Abs(CurrentRotation - transform.eulerAngles.y) < 10f)
+        {
+            var turnAdjust = (transform.eulerAngles.y - CurrentRotation) * m_SteerHelper;
+            Quaternion velRotation = Quaternion.AngleAxis(turnAdjust, Vector3.up);
+            m_Rigidbody.velocity = velRotation * m_Rigidbody.velocity;
+        }
+
+        CurrentRotation = transform.eulerAngles.y;
+    }
+
+    #endregion
+
+    #region Commands   
+
+    [Command]
+    public void CmdSavePos(int Id)
+    {
+        //UnityEngine.Debug.Log("aaaa");
+        RpcClientPlayerId(Id);
+    }
+
+    [Command]
+    public void CmdPlayerMove(float inputSteering, float inputAcceleration, float inputBrake, float speed, bool raceStart){
+        if (raceStart)
+        {
+            inputBrake = Mathf.Clamp(InputBrake, 0, 1);
         }
         else
         {
-            InputBrake = 1;   
+            inputBrake = 1;
         }
 
-        float steering = maxSteeringAngle * InputSteering;
+        float steering = maxSteeringAngle * inputSteering;
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -136,106 +245,6 @@ public class PlayerController : NetworkBehaviour
         SpeedLimiter();
         AddDownForce();
         TractionControl();
-        
-    }
-
-    #endregion
-
-    #region Methods
-
-    // crude traction control that reduces the power to wheel if the car is wheel spinning too much
-    private void TractionControl()
-    {
-        foreach (var axleInfo in axleInfos)
-        {
-            WheelHit wheelHitLeft;
-            WheelHit wheelHitRight;
-            axleInfo.leftWheel.GetGroundHit(out wheelHitLeft);
-            axleInfo.rightWheel.GetGroundHit(out wheelHitRight);
-
-            if (wheelHitLeft.forwardSlip >= slipLimit)
-            {
-                var howMuchSlip = (wheelHitLeft.forwardSlip - slipLimit) / (1 - slipLimit);
-                axleInfo.leftWheel.motorTorque -= axleInfo.leftWheel.motorTorque * howMuchSlip * slipLimit;
-            }
-
-            if (wheelHitRight.forwardSlip >= slipLimit)
-            {
-                var howMuchSlip = (wheelHitRight.forwardSlip - slipLimit) / (1 - slipLimit);
-                axleInfo.rightWheel.motorTorque -= axleInfo.rightWheel.motorTorque * howMuchSlip * slipLimit;
-            }
-        }
-    }
-
-// this is used to add more grip in relation to speed
-    private void AddDownForce()
-    {
-        foreach (var axleInfo in axleInfos)
-        {
-            axleInfo.leftWheel.attachedRigidbody.AddForce(
-                -transform.up * (downForce * axleInfo.leftWheel.attachedRigidbody.velocity.magnitude));
-        }
-    }
-
-    private void SpeedLimiter()
-    {
-        float speed = m_Rigidbody.velocity.magnitude;
-        if (speed > topSpeed)
-            m_Rigidbody.velocity = topSpeed * m_Rigidbody.velocity.normalized;
-    }
-
-// finds the corresponding visual wheel
-// correctly applies the transform
-    public void ApplyLocalPositionToVisuals(WheelCollider col)
-    {
-        if (col.transform.childCount == 0)
-        {
-            return;
-        }
-
-        Transform visualWheel = col.transform.GetChild(0);
-        Vector3 position;
-        Quaternion rotation;
-        col.GetWorldPose(out position, out rotation);
-        var myTransform = visualWheel.transform;
-        myTransform.position = position;
-        myTransform.rotation = rotation;
-    }
-
-    private void SteerHelper()
-    {
-        foreach (var axleInfo in axleInfos)
-        {
-            WheelHit[] wheelHit = new WheelHit[2];
-            axleInfo.leftWheel.GetGroundHit(out wheelHit[0]);
-            axleInfo.rightWheel.GetGroundHit(out wheelHit[1]);
-            foreach (var wh in wheelHit)
-            {
-                if (wh.normal == Vector3.zero)
-                    return; // wheels arent on the ground so dont realign the rigidbody velocity
-            }
-        }
-
-// this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
-        if (Mathf.Abs(CurrentRotation - transform.eulerAngles.y) < 10f)
-        {
-            var turnAdjust = (transform.eulerAngles.y - CurrentRotation) * m_SteerHelper;
-            Quaternion velRotation = Quaternion.AngleAxis(turnAdjust, Vector3.up);
-            m_Rigidbody.velocity = velRotation * m_Rigidbody.velocity;
-        }
-
-        CurrentRotation = transform.eulerAngles.y;
-    }
-
-    #endregion
-
-    #region Commands   
-
-    [Command]
-    public void CmdSavePos(int Id)
-    {
-        //UnityEngine.Debug.Log("aaaa");
-        RpcClientPlayerId(Id);
     }
 
     #endregion

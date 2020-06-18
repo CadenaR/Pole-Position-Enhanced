@@ -161,7 +161,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 1
+  clientAuthority: 0
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
@@ -207,6 +207,7 @@ MonoBehaviour:
   maxLap: 0
   checkpoint: 0
   ID: 0
+  playerTimer: {fileID: 0}
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0

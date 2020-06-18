@@ -21,6 +21,7 @@ public class SetupPlayer : NetworkBehaviour
     public PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     public PolePositionManager m_PolePositionManager;
+    [SyncVar]
     public bool raceStart;
 
     public GameObject carBody;
@@ -123,8 +124,9 @@ public class SetupPlayer : NetworkBehaviour
 
     [Command]
     public void CmdStartRace()
-    {        
-        RpcSetRaceStart(true);
+    {
+        raceStart = true;
+        FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }
 
     [Command]
@@ -152,6 +154,7 @@ public class SetupPlayer : NetworkBehaviour
         {
             pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;
         }
+        
         FindObjectOfType<UIManager>().startTime = NetworkTime.time;
         netPlayer.GetComponent<SetupPlayer>().raceStart = false;
         netPlayer.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
@@ -168,8 +171,8 @@ public class SetupPlayer : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void RpcSetRaceStart(bool b)
+    [Server]
+    public void SetRaceStart(bool b)
     {        
         raceStart = b;
         FindObjectOfType<PolePositionManager>().time.ResetTimer();
