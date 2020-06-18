@@ -20,7 +20,7 @@ public class PlayerInfo : NetworkBehaviour
     [SyncVar]
     public int ID;
 
-    Timer playerTimer;
+    public Timer playerTimer;
 
     public int CurrentPosition { get; set; }
     
@@ -43,8 +43,10 @@ public class PlayerInfo : NetworkBehaviour
         }
         if (lap > maxLap)
         {
-            Debug.Log(playerTimer.TimeToText(playerTimer.SaveTotalTime()));
+            playerTimer.SaveTotalTime();
+            RpcSaveTotalTime();
             Debug.Log("Has terminado la carrera.");
+            FindObjectOfType<CameraController>().SwapToEndCamera();            
         }
     }
 
@@ -53,7 +55,15 @@ public class PlayerInfo : NetworkBehaviour
     {
         checkpoint = c;
     }
-
-
     #endregion
+
+    #region Rpc
+
+    [ClientRpc]
+    public void RpcSaveTotalTime(){
+        FindObjectOfType<UIManager>().UpdateEnd();
+        Debug.Log(playerTimer.TimeToText(playerTimer.t));
+    }
+
+    #endregion    
 }

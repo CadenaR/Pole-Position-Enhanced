@@ -18,9 +18,13 @@ public class CameraController : MonoBehaviour
 
     [SerializeField] private int m_cameraAceleration = 6;
 
+    [SerializeField] private GameObject endCamera;
+
     private Vector3 m_Direction = Vector3.zero;
     
     private Camera mainCamera;
+
+    public bool end = false;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +36,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (m_Focus != null)
+        if (m_Focus != null && !end)
         {
             
             if (this.m_Circuit != null)
@@ -66,5 +70,12 @@ public class CameraController : MonoBehaviour
                 mainCamera.transform.LookAt(m_Focus.transform.position);
             }
         }
+    }
+    
+    public void SwapToEndCamera(){
+        end = true;
+        this.endCamera.SetActive(true);
+        this.mainCamera.gameObject.SetActive(false);
+        //GetComponent<Transform>().SetPositionAndRotation(new Vector3(-42.08f, 3.64f, 62.12f), new Quaternion (12f, 0f, 0f, 1f));
     }
 }

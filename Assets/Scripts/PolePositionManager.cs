@@ -23,6 +23,7 @@ public class PolePositionManager : NetworkBehaviour
     private GameObject[] m_DebuggingSpheres;
     public bool startRace = false;
 
+    [Server]
     private void Awake()
     {
         if (networkManager == null) networkManager = FindObjectOfType<PoleNetworkManager>();
@@ -36,6 +37,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }  
 
+    [Server]
     private void Update()
     {   
         if (m_Players.Count == 0){
@@ -45,6 +47,7 @@ public class PolePositionManager : NetworkBehaviour
         
     }
 
+    [Server]
     public void AddPlayer(PlayerInfo player)
     {
         playerArraySemaphore.Wait();
@@ -70,6 +73,7 @@ public class PolePositionManager : NetworkBehaviour
         }
     }
 
+    [Server]        
     public void UpdateRaceProgress()
     {
         for (int i = 0; i < m_Players_Clone.Count; ++i)

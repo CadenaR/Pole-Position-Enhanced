@@ -53,6 +53,9 @@ public class UIManager : NetworkBehaviour
     [SerializeField] public Text textLaps;
     [SerializeField] public Text textPosition;
     [SerializeField] private Text Semaphore;
+    [SerializeField] private Text EndPlayers;
+    [SerializeField] private Text EndTimes;
+    
 
     public bool ready = false;
     
@@ -356,6 +359,19 @@ public class UIManager : NetworkBehaviour
         textPosition.text = myRaceOrder;
     }
 
+    #endregion
+
+    #region End
+    public void UpdateEnd(){
+        EndPlayers.text = "";
+        EndTimes.text = "";
+        PlayerInfo info = new PlayerInfo();
+        foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>()){
+            info = player.GetComponent<PlayerInfo>();
+            EndPlayers.text += "\n" + info.Name + "\n";
+            EndTimes.text += "\n" + info.playerTimer.TimeToText(info.playerTimer.t) + "\n";
+        }
+    }
     #endregion
 }
 

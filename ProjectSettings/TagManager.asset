@@ -10,6 +10,7 @@ TagManager:
   - ChatWindow
   - Checkpoints
   - UIMarchaAtras
+  - EndCamera
   layers:
   - Default
   - TransparentFX
