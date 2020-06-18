@@ -175,5 +175,11 @@ public class SetupPlayer : NetworkBehaviour
         FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }
 
+    [ClientRpc]
+    public void RpcUpdatePositions(string myRaceOrder)
+    {        
+        FindObjectOfType<UIManager>().UpdatePositions(myRaceOrder);
+    }
+
     #endregion
 }

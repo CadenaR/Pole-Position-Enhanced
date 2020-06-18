@@ -43,8 +43,8 @@ public class PolePositionManager : NetworkBehaviour
         if (m_Players.Count == 0){
             return;
         }
+
         UpdateRaceProgress();
-        
     }
 
     [Server]
@@ -111,7 +111,9 @@ public class PolePositionManager : NetworkBehaviour
             playerPlace++;
         }
 
-        FindObjectOfType<UIManager>().UpdatePositions(myRaceOrder);
+        foreach (SetupPlayer player in FindObjectsOfType<SetupPlayer>()){
+            player.RpcUpdatePositions(myRaceOrder);
+        }        
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
@@ -142,5 +144,5 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         return minArcL;
-    }  
+    }
 }
