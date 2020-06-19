@@ -30,6 +30,8 @@ public class PlayerController : NetworkBehaviour
     private float InputSteering { get; set; }
     private float InputBrake { get; set; }
 
+    bool startR;
+
     private PlayerInfo m_PlayerInfo;
 
     private Rigidbody m_Rigidbody;
@@ -77,7 +79,66 @@ public class PlayerController : NetworkBehaviour
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
         InputBrake = Mathf.Clamp(InputBrake, 0, 1);
 
-        CmdPlayerMove(InputSteering, InputAcceleration, InputBrake, this.GetComponent<SetupPlayer>().raceStart);
+        startR = this.GetComponent<SetupPlayer>().raceStart;
+        Transform playerPos = this.GetComponent<Transform>();
+        CmdPlayerMove(InputSteering, InputAcceleration, InputBrake, startR, playerPos);
+        
+        if (!startR)
+        {
+            InputBrake = 1;
+        }
+
+        float steering = maxSteeringAngle * InputSteering;
+
+        foreach (AxleInfo axleInfo in this.axleInfos)
+        {
+            if (axleInfo.steering)
+            {
+                axleInfo.leftWheel.steerAngle = steering;
+                axleInfo.rightWheel.steerAngle = steering;
+            }
+
+            if (axleInfo.motor)
+            {
+                if (InputAcceleration > float.Epsilon)
+                {
+                    axleInfo.leftWheel.motorTorque = forwardMotorTorque;
+                    axleInfo.leftWheel.brakeTorque = 0;
+                    axleInfo.rightWheel.motorTorque = forwardMotorTorque;
+                    axleInfo.rightWheel.brakeTorque = 0;
+                }
+
+                if (InputAcceleration < -float.Epsilon)
+                {
+                    axleInfo.leftWheel.motorTorque = -backwardMotorTorque;
+                    axleInfo.leftWheel.brakeTorque = 0;
+                    axleInfo.rightWheel.motorTorque = -backwardMotorTorque;
+                    axleInfo.rightWheel.brakeTorque = 0;
+                }
+
+                if (Math.Abs(InputAcceleration) < float.Epsilon)
+                {
+                    axleInfo.leftWheel.motorTorque = 0;
+                    axleInfo.leftWheel.brakeTorque = engineBrake;
+                    axleInfo.rightWheel.motorTorque = 0;
+                    axleInfo.rightWheel.brakeTorque = engineBrake;
+                }
+
+                if (InputBrake > 0)
+                {
+                    axleInfo.leftWheel.brakeTorque = footBrake;
+                    axleInfo.rightWheel.brakeTorque = footBrake;
+                }
+            }
+
+            ApplyLocalPositionToVisuals(axleInfo.leftWheel);
+            ApplyLocalPositionToVisuals(axleInfo.rightWheel);
+        }
+
+        SteerHelper();
+        SpeedLimiter();
+        AddDownForce();
+        TractionControl();
     }
 
     #endregion
@@ -85,7 +146,7 @@ public class PlayerController : NetworkBehaviour
     #region Methods
 
     // crude traction control that reduces the power to wheel if the car is wheel spinning too much
-    [Server]
+    
     private void TractionControl()
     {
         foreach (var axleInfo in axleInfos)
@@ -110,7 +171,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     // this is used to add more grip in relation to speed
-    [Server]
+   
     private void AddDownForce()
     {
         foreach (var axleInfo in axleInfos)
@@ -120,7 +181,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    [Server]
     private void SpeedLimiter()
     {
         float speed = m_Rigidbody.velocity.magnitude;
@@ -146,7 +206,6 @@ public class PlayerController : NetworkBehaviour
         myTransform.rotation = rotation;
     }
 
-    [Server]
     private void SteerHelper()
     {
         foreach (var axleInfo in axleInfos)
@@ -184,12 +243,19 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdPlayerMove(float inputSteering, float inputAcceleration, float inputBrake, bool start)
+    public void CmdPlayerMove(float inputSteering, float inputAcceleration, float inputBrake, bool start, Transform playerPos)
     {
 
         if (!start)
         {
             inputBrake = 1;
+        }
+
+        Transform myPosRot = this.GetComponent<Transform>();
+
+        if(Vector3.Distance(playerPos.position, myPosRot.position)  < Vector3.kEpsilon)
+        {
+            RpcUpdatePosition(myPosRot);
         }
 
         float steering = maxSteeringAngle * inputSteering;
@@ -264,6 +330,13 @@ public class PlayerController : NetworkBehaviour
         }
         FindObjectOfType<PolePositionManager>().positionOrder.Release();
         //UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);
+    }
+
+    [ClientRpc]
+    public void RpcUpdatePosition(Transform serverPlayerPosition)
+    {
+        this.GetComponent<Transform>().position = serverPlayerPosition.position;
+        this.GetComponent<Transform>().rotation = serverPlayerPosition.rotation;
     }
 
     #endregion

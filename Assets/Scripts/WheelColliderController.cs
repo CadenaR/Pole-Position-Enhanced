@@ -8,6 +8,7 @@ public class WheelColliderController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
+            UnityEngine.Debug.Log("Me estoy chocando rueda");
             Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), this.GetComponent<Collider>());
         }
     }

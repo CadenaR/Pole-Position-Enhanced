@@ -124,6 +124,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         if (classifLap && collision.gameObject.tag == "Player")
         {
+            UnityEngine.Debug.Log("Me estoy chocando y soy " + m_PlayerInfo.Name);
             Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), this.GetComponent<Collider>());
         }
     }
