@@ -80,7 +80,10 @@ public class SetupPlayer : NetworkBehaviour
     void Start()
     {
         if (!classifLap)
+        {
             AppearCar();
+
+        }
 
         if (hasAuthority)
         {
@@ -179,6 +182,7 @@ public class SetupPlayer : NetworkBehaviour
         {
             if (player.hasAuthority) continue;
             player.AppearCar();
+            player.GetComponent<NetworkTransform>().enabled = true;
         }
     }
 

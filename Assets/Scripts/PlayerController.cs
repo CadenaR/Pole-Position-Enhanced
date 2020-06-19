@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.SceneManagement;
+using Mirror.Websocket;
 
 /*
 	Documentation: https://mirror-networking.com/docs/Guides/NetworkBehaviour.html
@@ -22,7 +23,7 @@ public class PlayerController : NetworkBehaviour
     public float engineBrake = 1e+12f;
     public float footBrake = 1e+24f;
     public float topSpeed = 200f;
-    public float downForce = 100f;
+    public float downForce = 10f;
     public float slipLimit = 0.2f;
 
     private float CurrentRotation { get; set; }
@@ -64,81 +65,30 @@ public class PlayerController : NetworkBehaviour
         m_PlayerInfo = GetComponent<PlayerInfo>();
     }
 
+    [Client]
     public void Update()
     {
-
-        InputAcceleration = Input.GetAxis("Vertical");
-        InputSteering = Input.GetAxis(("Horizontal"));
-        InputBrake = Input.GetAxis("Jump");
-        Speed = m_Rigidbody.velocity.magnitude;
+        if (hasAuthority)
+        {
+            InputAcceleration = Input.GetAxis("Vertical");
+            InputSteering = Input.GetAxis(("Horizontal"));
+            InputBrake = Input.GetAxis("Jump");
+            Speed = m_Rigidbody.velocity.magnitude;
+        }
     }
 
+    [Client]
     public void FixedUpdate()
     {
-        InputSteering = Mathf.Clamp(InputSteering, -1, 1);
-        InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
-        InputBrake = Mathf.Clamp(InputBrake, 0, 1);
-
         startR = this.GetComponent<SetupPlayer>().raceStart;
-        Transform playerPos = this.GetComponent<Transform>();
-        CmdPlayerMove(InputSteering, InputAcceleration, InputBrake, startR, playerPos);
-        
-        if (!startR)
+        if (hasAuthority)
         {
-            InputBrake = 1;
+            InputSteering = Mathf.Clamp(InputSteering, -1, 1);
+            InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
+            InputBrake = Mathf.Clamp(InputBrake, 0, 1);
+
+            CmdPlayerMove(InputSteering, InputAcceleration, InputBrake, startR, this.GetComponent<Transform>().position);
         }
-
-        float steering = maxSteeringAngle * InputSteering;
-
-        foreach (AxleInfo axleInfo in this.axleInfos)
-        {
-            if (axleInfo.steering)
-            {
-                axleInfo.leftWheel.steerAngle = steering;
-                axleInfo.rightWheel.steerAngle = steering;
-            }
-
-            if (axleInfo.motor)
-            {
-                if (InputAcceleration > float.Epsilon)
-                {
-                    axleInfo.leftWheel.motorTorque = forwardMotorTorque;
-                    axleInfo.leftWheel.brakeTorque = 0;
-                    axleInfo.rightWheel.motorTorque = forwardMotorTorque;
-                    axleInfo.rightWheel.brakeTorque = 0;
-                }
-
-                if (InputAcceleration < -float.Epsilon)
-                {
-                    axleInfo.leftWheel.motorTorque = -backwardMotorTorque;
-                    axleInfo.leftWheel.brakeTorque = 0;
-                    axleInfo.rightWheel.motorTorque = -backwardMotorTorque;
-                    axleInfo.rightWheel.brakeTorque = 0;
-                }
-
-                if (Math.Abs(InputAcceleration) < float.Epsilon)
-                {
-                    axleInfo.leftWheel.motorTorque = 0;
-                    axleInfo.leftWheel.brakeTorque = engineBrake;
-                    axleInfo.rightWheel.motorTorque = 0;
-                    axleInfo.rightWheel.brakeTorque = engineBrake;
-                }
-
-                if (InputBrake > 0)
-                {
-                    axleInfo.leftWheel.brakeTorque = footBrake;
-                    axleInfo.rightWheel.brakeTorque = footBrake;
-                }
-            }
-
-            ApplyLocalPositionToVisuals(axleInfo.leftWheel);
-            ApplyLocalPositionToVisuals(axleInfo.rightWheel);
-        }
-
-        SteerHelper();
-        SpeedLimiter();
-        AddDownForce();
-        TractionControl();
     }
 
     #endregion
@@ -243,19 +193,11 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdPlayerMove(float inputSteering, float inputAcceleration, float inputBrake, bool start, Transform playerPos)
+    public void CmdPlayerMove(float inputSteering, float inputAcceleration, float inputBrake, bool start, Vector3 clientPos)
     {
-
         if (!start)
         {
             inputBrake = 1;
-        }
-
-        Transform myPosRot = this.GetComponent<Transform>();
-
-        if(Vector3.Distance(playerPos.position, myPosRot.position)  < Vector3.kEpsilon)
-        {
-            RpcUpdatePosition(myPosRot);
         }
 
         float steering = maxSteeringAngle * inputSteering;
@@ -309,6 +251,15 @@ public class PlayerController : NetworkBehaviour
         SpeedLimiter();
         AddDownForce();
         TractionControl();
+
+        Vector3 serverPos = this.GetComponent<Transform>().position;
+        Debug.Log("Client pos" + clientPos.x + " | " + clientPos.z + "\n Server pos" + serverPos.x + " | " + serverPos.z);
+        if (Math.Abs(Math.Abs(clientPos.x) - Math.Abs(serverPos.x)) > 2.5 || Math.Abs(Math.Abs(clientPos.z) - Math.Abs(serverPos.z)) > 2.5)
+        {
+            RpcUpdatePosition(serverPos);
+        }
+
+        RpcSetVelocity(this.GetComponent<Rigidbody>().velocity, this.GetComponent<Transform>().rotation);
     }
 
     #endregion
@@ -333,10 +284,23 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcUpdatePosition(Transform serverPlayerPosition)
+    public void RpcUpdatePosition(Vector3 serverPlayerPosition)
     {
-        this.GetComponent<Transform>().position = serverPlayerPosition.position;
-        this.GetComponent<Transform>().rotation = serverPlayerPosition.rotation;
+        Debug.Log("Cambio------------------------Pos");
+        if (!isServer)
+        {
+            this.GetComponent<Transform>().position = serverPlayerPosition;
+        }
+    }
+
+    [ClientRpc]
+    public void RpcSetVelocity(Vector3 velocity, Quaternion rotation)
+    {
+        if (!isServer)
+        {
+            m_Rigidbody.velocity = velocity;
+            this.GetComponent<Transform>().rotation = rotation;
+        }
     }
 
     #endregion
