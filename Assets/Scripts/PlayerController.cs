@@ -33,7 +33,7 @@ public class PlayerController : NetworkBehaviour
     private PlayerInfo m_PlayerInfo;
 
     private Rigidbody m_Rigidbody;
-    private float m_SteerHelper = 0.8f;        
+    private float m_SteerHelper = 0.8f;
 
     public float m_CurrentSpeed = 0;
 
@@ -64,20 +64,20 @@ public class PlayerController : NetworkBehaviour
 
     public void Update()
     {
-        
-            InputAcceleration = Input.GetAxis("Vertical");
-            InputSteering = Input.GetAxis(("Horizontal"));
-            InputBrake = Input.GetAxis("Jump");
-            Speed = m_Rigidbody.velocity.magnitude;            
+
+        InputAcceleration = Input.GetAxis("Vertical");
+        InputSteering = Input.GetAxis(("Horizontal"));
+        InputBrake = Input.GetAxis("Jump");
+        Speed = m_Rigidbody.velocity.magnitude;
     }
 
     public void FixedUpdate()
-    {   
+    {
         InputSteering = Mathf.Clamp(InputSteering, -1, 1);
         InputAcceleration = Mathf.Clamp(InputAcceleration, -1, 1);
+        InputBrake = Mathf.Clamp(InputBrake, 0, 1);
 
-        CmdPlayerMove(InputSteering, InputAcceleration, InputBrake, Speed, this.GetComponent<SetupPlayer>().raceStart);
-
+        CmdPlayerMove(InputSteering, InputAcceleration, InputBrake, this.GetComponent<SetupPlayer>().raceStart);
     }
 
     #endregion
@@ -109,7 +109,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-// this is used to add more grip in relation to speed
+    // this is used to add more grip in relation to speed
     [Server]
     private void AddDownForce()
     {
@@ -128,8 +128,8 @@ public class PlayerController : NetworkBehaviour
             m_Rigidbody.velocity = topSpeed * m_Rigidbody.velocity.normalized;
     }
 
-// finds the corresponding visual wheel
-// correctly applies the transform
+    // finds the corresponding visual wheel
+    // correctly applies the transform
     public void ApplyLocalPositionToVisuals(WheelCollider col)
     {
         if (col.transform.childCount == 0)
@@ -161,7 +161,7 @@ public class PlayerController : NetworkBehaviour
             }
         }
 
-// this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
+        // this if is needed to avoid gimbal lock problems that will make the car suddenly shift direction
         if (Mathf.Abs(CurrentRotation - transform.eulerAngles.y) < 10f)
         {
             var turnAdjust = (transform.eulerAngles.y - CurrentRotation) * m_SteerHelper;
@@ -184,19 +184,17 @@ public class PlayerController : NetworkBehaviour
     }
 
     [Command]
-    public void CmdPlayerMove(float inputSteering, float inputAcceleration, float inputBrake, float speed, bool raceStart){
-        if (raceStart)
-        {
-            inputBrake = Mathf.Clamp(InputBrake, 0, 1);
-        }
-        else
+    public void CmdPlayerMove(float inputSteering, float inputAcceleration, float inputBrake, bool start)
+    {
+
+        if (!start)
         {
             inputBrake = 1;
         }
 
         float steering = maxSteeringAngle * inputSteering;
 
-        foreach (AxleInfo axleInfo in axleInfos)
+        foreach (AxleInfo axleInfo in this.axleInfos)
         {
             if (axleInfo.steering)
             {
@@ -206,7 +204,7 @@ public class PlayerController : NetworkBehaviour
 
             if (axleInfo.motor)
             {
-                if (InputAcceleration > float.Epsilon)
+                if (inputAcceleration > float.Epsilon)
                 {
                     axleInfo.leftWheel.motorTorque = forwardMotorTorque;
                     axleInfo.leftWheel.brakeTorque = 0;
@@ -214,7 +212,7 @@ public class PlayerController : NetworkBehaviour
                     axleInfo.rightWheel.brakeTorque = 0;
                 }
 
-                if (InputAcceleration < -float.Epsilon)
+                if (inputAcceleration < -float.Epsilon)
                 {
                     axleInfo.leftWheel.motorTorque = -backwardMotorTorque;
                     axleInfo.leftWheel.brakeTorque = 0;
@@ -222,7 +220,7 @@ public class PlayerController : NetworkBehaviour
                     axleInfo.rightWheel.brakeTorque = 0;
                 }
 
-                if (Math.Abs(InputAcceleration) < float.Epsilon)
+                if (Math.Abs(inputAcceleration) < float.Epsilon)
                 {
                     axleInfo.leftWheel.motorTorque = 0;
                     axleInfo.leftWheel.brakeTorque = engineBrake;
@@ -230,7 +228,7 @@ public class PlayerController : NetworkBehaviour
                     axleInfo.rightWheel.brakeTorque = engineBrake;
                 }
 
-                if (InputBrake > 0)
+                if (inputBrake > 0)
                 {
                     axleInfo.leftWheel.brakeTorque = footBrake;
                     axleInfo.rightWheel.brakeTorque = footBrake;
@@ -251,7 +249,7 @@ public class PlayerController : NetworkBehaviour
 
 
     #region RPC
-    
+
     [ClientRpc]
     public void RpcClientPlayerId(int Id)
     {
@@ -262,7 +260,7 @@ public class PlayerController : NetworkBehaviour
         if (FindObjectOfType<PolePositionManager>().raceOrder.Count >= FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1)
         {
             UnityEngine.Debug.Log("Empieza la carrera.");
-            NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdEndClassification();                    
+            NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdEndClassification();
         }
         FindObjectOfType<PolePositionManager>().positionOrder.Release();
         //UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);

@@ -11,6 +11,7 @@ TagManager:
   - Checkpoints
   - UIMarchaAtras
   - EndCamera
+  - Wheel
   layers:
   - Default
   - TransparentFX

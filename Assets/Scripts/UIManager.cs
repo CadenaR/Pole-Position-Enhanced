@@ -19,14 +19,14 @@ public class UIManager : NetworkBehaviour
     public PolePositionManager m_PositionManager;
 
     public string playerName { get; set; }
-    
+
     public int carSelection { set { ChangeCar(value); } }
 
     public bool nextLap;
     public int CurrentLap;
     public int MaxLap;
 
-    
+
 
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
@@ -46,7 +46,8 @@ public class UIManager : NetworkBehaviour
     public Scrollbar scrollbar;
     public Toggle classifLapToggle;
 
-    [Header("In-Game HUD")] [SerializeField]
+    [Header("In-Game HUD")]
+    [SerializeField]
     private GameObject inGameHUD;
     [SerializeField] private Text textTime;
     [SerializeField] private Text textSpeed;
@@ -55,14 +56,14 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private Text Semaphore;
     [SerializeField] private Text EndPlayers;
     [SerializeField] private Text EndTimes;
-    
+
 
     public bool ready = false;
-    
+
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
-        
+
     }
 
     private void Start()
@@ -76,11 +77,12 @@ public class UIManager : NetworkBehaviour
         {
             buttonReturn.onClick.AddListener(() => GoBack());
         }
-        if (SceneManager.GetActiveScene().name == "GameScene") {
+        if (SceneManager.GetActiveScene().name == "GameScene")
+        {
             startTime = NetworkTime.time;
             textPosition.transform.parent.gameObject.SetActive(false);
             nextLap = false;
-            m_PositionManager = FindObjectOfType<PolePositionManager>();            
+            m_PositionManager = FindObjectOfType<PolePositionManager>();
         }
     }
 
@@ -98,11 +100,11 @@ public class UIManager : NetworkBehaviour
         {
             m_PositionManager = FindObjectOfType<PolePositionManager>();
         }
-        else if(!ready)
-        { 
+        else if (!ready)
+        {
             ready = true;
         }
-        return;
+        //return;
     }
 
     public void ActivateMainMenu()
@@ -125,7 +127,7 @@ public class UIManager : NetworkBehaviour
 
     public void StartClient()
     {
-        if(inputFieldIP.text.Trim() == "")
+        if (inputFieldIP.text.Trim() == "")
         {
             m_NetworkManager.StartClient();
         }
@@ -166,7 +168,7 @@ public class UIManager : NetworkBehaviour
             if (item.hasAuthority)
             {
                 item.GetComponentInParent<PoleRoomPlayer>().CmdChangeName(playerName);
-                
+
             }
 
         }
@@ -212,7 +214,7 @@ public class UIManager : NetworkBehaviour
         }
 
         //foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
-        for(int i = 0; i < m_NetworkManager.roomSlots.Count; i++)
+        for (int i = 0; i < m_NetworkManager.roomSlots.Count; i++)
         {
 
             if (m_NetworkManager.roomSlots[i] == null)
@@ -258,7 +260,8 @@ public class UIManager : NetworkBehaviour
         m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdSetMaxLap(num);
     }
 
-    public void SetClassifLap(){
+    public void SetClassifLap()
+    {
         m_NetworkManager.roomSlots[0].GetComponent<PoleRoomPlayer>().CmdChangeClassifLap();
     }
 
@@ -345,7 +348,7 @@ public class UIManager : NetworkBehaviour
     {
         CurrentLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().lap;
         MaxLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().maxLap;
-        if(CurrentLap <= MaxLap)
+        if (CurrentLap <= MaxLap)
             textLaps.text = "Lap " + CurrentLap + "/" + MaxLap;
     }
 
@@ -362,11 +365,13 @@ public class UIManager : NetworkBehaviour
     #endregion
 
     #region End
-    public void UpdateEnd(){
+    public void UpdateEnd()
+    {
         EndPlayers.text = "";
         EndTimes.text = "";
         PlayerInfo info = new PlayerInfo();
-        foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>()){
+        foreach (SetupPlayer player in FindObjectsOfType<SetupPlayer>())
+        {
             info = player.GetComponent<PlayerInfo>();
             EndPlayers.text += "\n" + info.Name + "\n";
             EndTimes.text += "\n" + info.playerTimer.TimeToText(info.playerTimer.t) + "\n";

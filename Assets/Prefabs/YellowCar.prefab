@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 402193092883154427}
   - component: {fileID: 6283861155603876286}
+  - component: {fileID: 1993911636763838278}
   m_Layer: 0
   m_Name: wheelColliderBackLeft
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -62,6 +63,18 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.5
   m_Enabled: 1
+--- !u!114 &1993911636763838278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206666679915713247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7580a4fd10a6642b0c2519d0bc67b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1508097745644926054
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +140,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508097745644926054}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1.0799457, y: 0.51, z: 2.83}
@@ -154,14 +167,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508097745644926054}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 1
+  syncInterval: 0.01
+  clientAuthority: 0
   localPositionSensitivity: 0.01
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
@@ -180,9 +193,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   classifLap: 0
+  raceStart: 0
   m_PlayerController: {fileID: 0}
   m_PolePositionManager: {fileID: 0}
-  raceStart: 0
   carBody: {fileID: 4446630168060767223}
   carWheelFR: {fileID: 3266956378083433421}
   carWheelFL: {fileID: 6536688297255976588}
@@ -207,6 +220,7 @@ MonoBehaviour:
   maxLap: 0
   checkpoint: 0
   ID: 0
+  playerTimer: {fileID: 0}
 --- !u!114 &1137246169109603126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -613,9 +627,10 @@ GameObject:
   m_Component:
   - component: {fileID: 6591118866548466313}
   - component: {fileID: 2399590223335585634}
+  - component: {fileID: 3864929105702521571}
   m_Layer: 0
   m_Name: wheelColliderFrontRight
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -665,6 +680,18 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.5
   m_Enabled: 1
+--- !u!114 &3864929105702521571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5633709196014399260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7580a4fd10a6642b0c2519d0bc67b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5703065227131910028
 GameObject:
   m_ObjectHideFlags: 0
@@ -866,9 +893,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2615011713919003219}
   - component: {fileID: 2814993475587467073}
+  - component: {fileID: 8277148434387748622}
   m_Layer: 0
   m_Name: wheelColliderBackRight
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -918,6 +946,18 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.5
   m_Enabled: 1
+--- !u!114 &8277148434387748622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6885831697691427391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7580a4fd10a6642b0c2519d0bc67b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8856475019997471047
 GameObject:
   m_ObjectHideFlags: 0
@@ -928,9 +968,10 @@ GameObject:
   m_Component:
   - component: {fileID: 214698561802220239}
   - component: {fileID: 7529074410251188952}
+  - component: {fileID: 5437007121705773406}
   m_Layer: 0
   m_Name: wheelColliderFrontLeft
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -980,3 +1021,15 @@ WheelCollider:
     m_AsymptoteValue: 0.75
     m_Stiffness: 1.5
   m_Enabled: 1
+--- !u!114 &5437007121705773406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8856475019997471047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7580a4fd10a6642b0c2519d0bc67b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

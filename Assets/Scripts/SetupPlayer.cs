@@ -16,13 +16,15 @@ public class SetupPlayer : NetworkBehaviour
     [SyncVar]
     public bool classifLap;
 
+    [SyncVar]
+    public bool raceStart;
+
     private UIManager m_UIManager;
     private PoleNetworkManager m_NetworkManager;
     public PlayerController m_PlayerController;
     private PlayerInfo m_PlayerInfo;
     public PolePositionManager m_PolePositionManager;
-    [SyncVar]
-    public bool raceStart;
+
 
     public GameObject carBody;
     public GameObject carWheelFR;
@@ -60,6 +62,7 @@ public class SetupPlayer : NetworkBehaviour
     /// </summary>
     public override void OnStartLocalPlayer()
     {
+        raceStart = false;
     }
 
     #endregion
@@ -70,15 +73,13 @@ public class SetupPlayer : NetworkBehaviour
         m_PlayerController = GetComponent<PlayerController>();
         m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
         m_PolePositionManager = FindObjectOfType<PolePositionManager>();
-        m_UIManager = FindObjectOfType<UIManager>();        
+        m_UIManager = FindObjectOfType<UIManager>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        raceStart = false;
-
-        if(!classifLap)
+        if (!classifLap)
             AppearCar();
 
         if (hasAuthority)
@@ -89,7 +90,7 @@ public class SetupPlayer : NetworkBehaviour
             AppearCar();
             ConfigureCamera();
 
-            if(classifLap)
+            if (classifLap)
             {
                 FindObjectOfType<UIManager>().textLaps.text = "Classif.";
             }
@@ -102,7 +103,7 @@ public class SetupPlayer : NetworkBehaviour
 
     void OnSpeedChangeEventHandler(float speed)
     {
-        m_UIManager.UpdateSpeed((int) speed * 5); // 5 for visualization purpose (km/h)
+        m_UIManager.UpdateSpeed((int)speed * 5); // 5 for visualization purpose (km/h)
     }
 
     void ConfigureCamera()
@@ -112,12 +113,19 @@ public class SetupPlayer : NetworkBehaviour
 
     public void AppearCar()
     {
-        this.GetComponentInParent<BoxCollider>().isTrigger = false;
         carBody.GetComponent<Renderer>().enabled = true;
         carWheelFR.GetComponent<Renderer>().enabled = true;
         carWheelFL.GetComponent<Renderer>().enabled = true;
         carWheelBR.GetComponent<Renderer>().enabled = true;
         carWheelBL.GetComponent<Renderer>().enabled = true;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (classifLap && collision.gameObject.tag == "Player")
+        {
+            Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), this.GetComponent<Collider>());
+        }
     }
 
     #region Commands
@@ -133,11 +141,12 @@ public class SetupPlayer : NetworkBehaviour
     public void CmdEndClassification()
     {
         UnityEngine.Debug.Log("length 1: " + m_PolePositionManager.raceOrder.Count);
-        RpcRestartPosition();        
+        RpcRestartPosition();
     }
 
     [Command]
-    public void CmdSetClassifLap(bool classif){
+    public void CmdSetClassifLap(bool classif)
+    {
         classifLap = classif;
     }
 
@@ -145,7 +154,8 @@ public class SetupPlayer : NetworkBehaviour
 
     #region ClientRpc
     [ClientRpc]
-    public void RpcRestartPosition(){
+    public void RpcRestartPosition()
+    {
         NetworkIdentity netPlayer = NetworkClient.connection.identity;
         Debug.Log("Asignando posición al jugador: " + netPlayer.GetComponentInParent<PlayerInfo>().ID);
         int pos = m_PolePositionManager.raceOrder.IndexOf(NetworkClient.connection.identity.GetComponent<PlayerInfo>().ID);
@@ -154,7 +164,7 @@ public class SetupPlayer : NetworkBehaviour
         {
             pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;
         }
-        
+
         FindObjectOfType<UIManager>().startTime = NetworkTime.time;
         netPlayer.GetComponent<SetupPlayer>().raceStart = false;
         netPlayer.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
@@ -164,7 +174,7 @@ public class SetupPlayer : NetworkBehaviour
         netPlayer.GetComponent<PlayerInfo>().lap = 1;
         CmdSetClassifLap(false);
         FindObjectOfType<UIManager>().UpdateLaps();
-        foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
+        foreach (SetupPlayer player in FindObjectsOfType<SetupPlayer>())
         {
             if (player.hasAuthority) continue;
             player.AppearCar();
@@ -173,14 +183,14 @@ public class SetupPlayer : NetworkBehaviour
 
     [Server]
     public void SetRaceStart(bool b)
-    {        
+    {
         raceStart = b;
         FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }
 
     [ClientRpc]
     public void RpcUpdatePositions(string myRaceOrder)
-    {        
+    {
         FindObjectOfType<UIManager>().UpdatePositions(myRaceOrder);
     }
 
