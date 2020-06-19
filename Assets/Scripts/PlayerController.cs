@@ -23,7 +23,7 @@ public class PlayerController : NetworkBehaviour
     public float engineBrake = 1e+12f;
     public float footBrake = 1e+24f;
     public float topSpeed = 200f;
-    public float downForce = 10f;
+    public float downForce = 100f;
     public float slipLimit = 0.2f;
 
     private float CurrentRotation { get; set; }
@@ -154,6 +154,7 @@ public class PlayerController : NetworkBehaviour
         var myTransform = visualWheel.transform;
         myTransform.position = position;
         myTransform.rotation = rotation;
+        Physics.IgnoreCollision(col, GetComponent<Collider>());
     }
 
     private void SteerHelper()
@@ -189,7 +190,15 @@ public class PlayerController : NetworkBehaviour
     public void CmdSavePos(int Id)
     {
         //UnityEngine.Debug.Log("aaaa");
-        RpcClientPlayerId(Id);
+        FindObjectOfType<PolePositionManager>().positionOrder.Wait();
+        FindObjectOfType<PolePositionManager>().raceOrder.Add(Id);
+
+        if (FindObjectOfType<PolePositionManager>().raceOrder.Count >= FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1)
+        {
+            UnityEngine.Debug.Log("Empieza la carrera.");
+            FindObjectOfType<PolePositionManager>().EndClassification();
+        }
+        FindObjectOfType<PolePositionManager>().positionOrder.Release();
     }
 
     [Command]
@@ -253,7 +262,6 @@ public class PlayerController : NetworkBehaviour
         TractionControl();
 
         Vector3 serverPos = this.GetComponent<Transform>().position;
-        Debug.Log("Client pos" + clientPos.x + " | " + clientPos.z + "\n Server pos" + serverPos.x + " | " + serverPos.z);
         if (Math.Abs(Math.Abs(clientPos.x) - Math.Abs(serverPos.x)) > 2.5 || Math.Abs(Math.Abs(clientPos.z) - Math.Abs(serverPos.z)) > 2.5)
         {
             RpcUpdatePosition(serverPos);
@@ -271,32 +279,25 @@ public class PlayerController : NetworkBehaviour
     public void RpcClientPlayerId(int Id)
     {
         UnityEngine.Debug.Log("El jugador " + Id + " ha dado una vuelta.");
-        FindObjectOfType<PolePositionManager>().positionOrder.Wait();
-        FindObjectOfType<PolePositionManager>().raceOrder.Add(Id);
-
-        if (FindObjectOfType<PolePositionManager>().raceOrder.Count >= FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1)
-        {
-            UnityEngine.Debug.Log("Empieza la carrera.");
-            NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdEndClassification();
-        }
-        FindObjectOfType<PolePositionManager>().positionOrder.Release();
+       
         //UnityEngine.Debug.Log("length 2:" + FindObjectOfType<PolePositionManager>().ordenSalida.Count);
     }
 
     [ClientRpc]
     public void RpcUpdatePosition(Vector3 serverPlayerPosition)
     {
-        Debug.Log("Cambio------------------------Pos");
-        if (!isServer)
+        if (isClientOnly)
         {
             this.GetComponent<Transform>().position = serverPlayerPosition;
         }
+            FindObjectOfType<UIManager>().startTime = NetworkTime.time;
+            FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }
 
     [ClientRpc]
     public void RpcSetVelocity(Vector3 velocity, Quaternion rotation)
     {
-        if (!isServer)
+        if (isClientOnly)
         {
             m_Rigidbody.velocity = velocity;
             this.GetComponent<Transform>().rotation = rotation;

@@ -80,10 +80,7 @@ public class SetupPlayer : NetworkBehaviour
     void Start()
     {
         if (!classifLap)
-        {
             AppearCar();
-
-        }
 
         if (hasAuthority)
         {
@@ -125,7 +122,7 @@ public class SetupPlayer : NetworkBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (classifLap && collision.gameObject.tag == "Player")
+        if (classifLap && (collision.gameObject.GetComponent<WheelCollider>() != null || collision.gameObject.tag == "Player"))
         {
             UnityEngine.Debug.Log("Me estoy chocando y soy " + m_PlayerInfo.Name);
             Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), this.GetComponent<Collider>());
@@ -139,6 +136,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         raceStart = true;
         FindObjectOfType<PolePositionManager>().time.ResetTimer();
+        RpcRaceStart();
     }
 
     [Command]
@@ -146,6 +144,7 @@ public class SetupPlayer : NetworkBehaviour
     {
         UnityEngine.Debug.Log("length 1: " + m_PolePositionManager.raceOrder.Count);
         RpcRestartPosition();
+
     }
 
     [Command]
@@ -160,30 +159,18 @@ public class SetupPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcRestartPosition()
     {
-        NetworkIdentity netPlayer = NetworkClient.connection.identity;
-        Debug.Log("Asignando posición al jugador: " + netPlayer.GetComponentInParent<PlayerInfo>().ID);
-        int pos = m_PolePositionManager.raceOrder.IndexOf(NetworkClient.connection.identity.GetComponent<PlayerInfo>().ID);
-
-        if (pos == -1)
+        if (hasAuthority)
         {
-            pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;
+            FindObjectOfType<UIManager>().startTime = NetworkTime.time;
+            FindObjectOfType<ParentCheck>().RestartCheckpoints();
+            FindObjectOfType<UIManager>().UpdateLaps();
         }
+    }
 
-        FindObjectOfType<UIManager>().startTime = NetworkTime.time;
-        netPlayer.GetComponent<SetupPlayer>().raceStart = false;
-        netPlayer.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-        netPlayer.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
-        netPlayer.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
-        FindObjectOfType<ParentCheck>().RestartCheckpoints();
-        netPlayer.GetComponent<PlayerInfo>().lap = 1;
-        CmdSetClassifLap(false);
-        FindObjectOfType<UIManager>().UpdateLaps();
-        foreach (SetupPlayer player in FindObjectsOfType<SetupPlayer>())
-        {
-            if (player.hasAuthority) continue;
-            player.AppearCar();
-            player.GetComponent<NetworkTransform>().enabled = true;
-        }
+    [ClientRpc]
+    void RpcRaceStart()
+    {
+        FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }
 
     [Server]
@@ -197,6 +184,12 @@ public class SetupPlayer : NetworkBehaviour
     public void RpcUpdatePositions(string myRaceOrder)
     {
         FindObjectOfType<UIManager>().UpdatePositions(myRaceOrder);
+    }
+
+    [ClientRpc]
+    public void RpcAppear()
+    {
+        AppearCar();
     }
 
     #endregion

@@ -30,18 +30,18 @@ public class PlayerInfo : NetworkBehaviour
         return Name;
     }
 
-    #region Command
+    #region Command    
 
     [Command]
     public void CmdIncreaseLap()
     {
         playerTimer = FindObjectOfType<PolePositionManager>().time;
-        if(lap <= maxLap){            
-            playerTimer.SaveTime(FindObjectOfType<PlayerInfo>().lap);
-            Debug.Log(playerTimer.TimeToText(playerTimer.lapTime[playerTimer.lapTime.Count-1]));
+        if(lap <= maxLap){
             lap++;
+            playerTimer.SaveTime(this.GetComponent<PlayerInfo>().lap);
+            Debug.Log(playerTimer.TimeToText(playerTimer.lapTime[playerTimer.lapTime.Count-1]));
         }
-        if (lap > maxLap)
+        else
         {
             playerTimer.SaveTotalTime();
             RpcSaveTotalTime();
@@ -54,8 +54,10 @@ public class PlayerInfo : NetworkBehaviour
     public void CmdSetCheckpoint(int c)
     {
         checkpoint = c;
-    }
+    }   
+
     #endregion
+
 
     #region Rpc
 

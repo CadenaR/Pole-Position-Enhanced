@@ -82,20 +82,32 @@ public class UIManager : NetworkBehaviour
             startTime = NetworkTime.time;
             textPosition.transform.parent.gameObject.SetActive(false);
             nextLap = false;
-            m_PositionManager = FindObjectOfType<PolePositionManager>();
+            
+        }
+    }
+
+    public void Update()
+    {
+        if (SceneManager.GetActiveScene().name == "GameScene")
+        {
+            if(m_PositionManager == null)
+            {
+                m_PositionManager = FindObjectOfType<PolePositionManager>();
+                return;
+            }
+            UpdateGameGUI();
         }
     }
 
     public void FixedUpdate()
     {
-        if (SceneManager.GetActiveScene().name == "GameScene" && ready)
-        {
-            UpdateGameGUI();
-        }
+        //ClientDebug("00"+ready);
+        
         if (SceneManager.GetActiveScene().name == "RoomScene")
         {
             UpdateRoomGUI();
         }
+        /*
         if (m_PositionManager == null)
         {
             m_PositionManager = FindObjectOfType<PolePositionManager>();
@@ -103,7 +115,7 @@ public class UIManager : NetworkBehaviour
         else if (!ready)
         {
             ready = true;
-        }
+        }*/
         //return;
     }
 
@@ -312,34 +324,40 @@ public class UIManager : NetworkBehaviour
 
     #region GameRoom
 
-    private void UpdateGameGUI()
-    {
-        if (NetworkClient.connection == null) return;
-
-        if (NetworkClient.connection.identity.GetComponent<SetupPlayer>().raceStart)
+    public void UpdateGameGUI()
+    {        
+        foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
         {
-            if (!NetworkClient.connection.identity.GetComponent<SetupPlayer>().classifLap)
+            if (player.hasAuthority)
             {
-                UpdateLaps();
-            }
-            if (Semaphore.text == "go!" && (int)m_PositionManager.time.t >= 1)
-            {
-                Semaphore.text = "";
-            }
-            m_PositionManager.time.UpdateTimer();
-            textTime.text = m_PositionManager.time.timerText;
-        }
-        else
-        {
-            t = (NetworkTime.time - startTime) % 60;
-            if (t >= 2)
-            {
-                Semaphore.text = "" + (5 - (int)t);
-                if (t >= 5)
+                if (player.raceStart)
                 {
-                    Semaphore.text = "go!";
-                    NetworkClient.connection.identity.GetComponent<SetupPlayer>().CmdStartRace();
+                    textTime.text = m_PositionManager.time.timerText;
+                    if (!player.classifLap)
+                    {
+                        UpdateLaps();
+                    }
+                    if (Semaphore.text == "go!" && (int)m_PositionManager.time.t >= 1)
+                    {
+                        Semaphore.text = "";
+                    }
+                    m_PositionManager.time.UpdateTimer();
+                    
                 }
+                else
+                {
+                    t = (NetworkTime.time - startTime) % 60;
+                    if (t >= 2)
+                    {
+                        Semaphore.text = "" + (5 - (int)t);
+                        if (t >= 5)
+                        {
+                            Semaphore.text = "go!";
+                            player.CmdStartRace();
+                        }
+                    }
+                }
+                return;
             }
         }
     }
@@ -378,5 +396,6 @@ public class UIManager : NetworkBehaviour
         }
     }
     #endregion
+
 }
 

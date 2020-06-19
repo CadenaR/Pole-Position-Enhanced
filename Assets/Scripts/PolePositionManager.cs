@@ -21,7 +21,6 @@ public class PolePositionManager : NetworkBehaviour
     private List<PlayerInfo> m_Players_Clone = new List<PlayerInfo>(4);
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
-    public bool startRace = false;
 
     [Server]
     private void Awake()
@@ -117,6 +116,7 @@ public class PolePositionManager : NetworkBehaviour
         //Debug.Log("El orden de carrera es: " + myRaceOrder);
     }
 
+
     float ComputeCarArcLength(int ID)
     {
         // Compute the projection of the car position to the closest circuit 
@@ -144,5 +144,27 @@ public class PolePositionManager : NetworkBehaviour
         }
 
         return minArcL;
+    }
+
+    [Server]
+    public void EndClassification()
+    {
+        foreach(PlayerInfo player in FindObjectsOfType<PlayerInfo>())
+        {
+            int pos = raceOrder.IndexOf(player.ID);
+            if (pos == -1)
+            {
+                pos = FindObjectOfType<PoleNetworkManager>().roomSlots.Count - 1;
+            }
+
+            player.GetComponent<SetupPlayer>().raceStart = false;
+            player.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+            player.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
+            player.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
+            player.GetComponent<PlayerController>().RpcUpdatePosition(player.GetComponent<Transform>().position);
+            player.GetComponent<SetupPlayer>().classifLap = false;
+            player.lap = 1;
+            player.GetComponent<SetupPlayer>().RpcAppear();
+        }        
     }
 }

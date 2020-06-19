@@ -39,7 +39,7 @@ public class ParentCheck : NetworkBehaviour
                 n = 0;
                 return;
             }
-            player.GetComponent<PlayerInfo>().CmdIncreaseLap();
+            NetworkClient.connection.identity.GetComponent<PlayerInfo>().CmdIncreaseLap();
             n = 0;
         }
         else if(n == 1 && !clasificacion && first){            

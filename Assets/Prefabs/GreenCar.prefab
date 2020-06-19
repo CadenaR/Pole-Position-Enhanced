@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 1137246169109603126}
   - component: {fileID: 6346869062069434778}
   - component: {fileID: 2697569808015383802}
+  - component: {fileID: 1276408082916886240}
   m_Layer: 0
   m_Name: GreenCar
   m_TagString: Player
@@ -250,7 +251,7 @@ MonoBehaviour:
   engineBrake: 1e+12
   footBrake: 1e+24
   topSpeed: 200
-  downForce: 1000
+  downForce: 100
   slipLimit: 0.2
   m_CurrentSpeed: 0
 --- !u!114 &6346869062069434778
@@ -291,6 +292,18 @@ MonoBehaviour:
   localRotationSensitivity: 0.01
   localScaleSensitivity: 0.01
   target: {fileID: 1170538449349667297}
+--- !u!114 &1276408082916886240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508097745644926054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 642e35d4524564c42afe1251eadebe61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2896783323484026901
 GameObject:
   m_ObjectHideFlags: 0
