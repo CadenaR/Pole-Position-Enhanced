@@ -103,9 +103,9 @@ public class PolePositionManager : NetworkBehaviour
             }
             arcLengths[i] = ComputeCarArcLength(i);
         }
-
         m_Players_Clone.Sort(new PlayerInfoComparer(arcLengths));
         playerArraySemaphore.Release();
+
         //Debug.Log("Jugadores " + m_Players.Count);
         string myRaceOrder = "";
         int playerPlace = 1;
@@ -140,7 +140,7 @@ public class PolePositionManager : NetworkBehaviour
 
         if (this.m_Players[ID].lap == 1)
         {
-            minArcL += m_CircuitController.CircuitLength;
+            minArcL -= m_CircuitController.CircuitLength;
         }
         else
         {

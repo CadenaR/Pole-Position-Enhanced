@@ -111,6 +111,14 @@ public class SetupPlayer : NetworkBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (this.GetComponent<Transform>().position.y > 3 || this.GetComponent<Transform>().position.y < 0.3)
+        {
+            this.GetComponent<Transform>().position = new Vector3(GetComponent<Transform>().position.x, 0.5f, GetComponent<Transform>().position.z);
+        }
+    }
+
     void OnSpeedChangeEventHandler(float speed)
     {
         m_UIManager.UpdateSpeed((int)speed * 5); // 5 for visualization purpose (km/h)

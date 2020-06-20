@@ -354,12 +354,10 @@ public class UIManager : NetworkBehaviour
         else
         {
             t = (NetworkTime.time - startTime) % 60;
-            if (t >= 3)
+            if (t >= 2)
             {
-                loadingPanel.SetActive(false);
-                if (t <= 4) return;
-                Semaphore.text = "" + (7 - (int)t);
-                if (t >= 7)
+                Semaphore.text = "" + (5 - (int)t);
+                if (t >= 5)
                 {
                     Semaphore.text = "go!";
                     m_SetupPlayer.CmdStartRace();
