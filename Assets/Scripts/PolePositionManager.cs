@@ -18,7 +18,7 @@ public class PolePositionManager : NetworkBehaviour
     public List<int> raceOrder = new List<int>();
     //public SyncListOrder ordenSalida = new SyncListOrder();
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
-    private List<PlayerInfo> m_Players_Clone = new List<PlayerInfo>(4);
+    public List<PlayerInfo> m_Players_Clone = new List<PlayerInfo>(4);
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
 
@@ -34,11 +34,6 @@ public class PolePositionManager : NetworkBehaviour
             m_DebuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             m_DebuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-    }
-
-    private void Start()
-    {
-        time = new Timer();
     }
 
     [Server]
@@ -71,6 +66,9 @@ public class PolePositionManager : NetworkBehaviour
 
         public override int Compare(PlayerInfo x, PlayerInfo y)
         {
+            if (x == null || y == null) //When client exits, one of this could be null
+                return 1;
+
             if (this.m_ArcLengths[x.ID] < m_ArcLengths[y.ID])
                 return 1;
             else return -1;
@@ -140,7 +138,7 @@ public class PolePositionManager : NetworkBehaviour
 
         if (this.m_Players[ID].lap == 1)
         {
-            minArcL -= m_CircuitController.CircuitLength;
+            minArcL += m_CircuitController.CircuitLength;
         }
         else
         {
@@ -151,6 +149,10 @@ public class PolePositionManager : NetworkBehaviour
         return minArcL;
     }
 
+    /*
+        Called when classification lap end (n-1 players have finished), move players to their starting point
+        based on the order of finishing
+    */
     [Server]
     public void EndClassification()
     {

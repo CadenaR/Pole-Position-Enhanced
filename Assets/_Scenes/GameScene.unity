@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -544,6 +544,11 @@ PrefabInstance:
       propertyPath: EndTimes
       value: 
       objectReference: {fileID: 919155788}
+    - target: {fileID: 5573530367899975127, guid: c0ec7d38d12552e4db42b5da47f90f78,
+        type: 3}
+      propertyPath: raceTimer
+      value: 
+      objectReference: {fileID: 1674395836}
     - target: {fileID: 6001824756326471052, guid: c0ec7d38d12552e4db42b5da47f90f78,
         type: 3}
       propertyPath: m_IsActive
@@ -3452,6 +3457,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+--- !u!1 &1674395835 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5573530367899975126, guid: c0ec7d38d12552e4db42b5da47f90f78,
+    type: 3}
+  m_PrefabInstance: {fileID: 245338826}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1674395836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1674395835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0e8e7599d8b2f4ab909ebf0d643727, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  timerText: 
+  t: 0
+--- !u!114 &1674395837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1674395835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 3563132041
+  serverOnly: 0
+  m_AssetId: c0ec7d38d12552e4db42b5da47f90f78
 --- !u!1 &1746098089
 GameObject:
   m_ObjectHideFlags: 0
@@ -3555,6 +3597,7 @@ GameObject:
   - component: {fileID: 1839589614}
   - component: {fileID: 1839589613}
   - component: {fileID: 1839589615}
+  - component: {fileID: 1839589616}
   m_Layer: 0
   m_Name: '@PolePositionManager'
   m_TagString: Untagged
@@ -3578,8 +3621,9 @@ MonoBehaviour:
   syncInterval: 0.1
   numPlayers: 0
   networkManager: {fileID: 0}
-  time: {fileID: 0}
+  time: {fileID: 1839589616}
   raceOrder: 
+  m_Players_Clone: []
 --- !u!4 &1839589614
 Transform:
   m_ObjectHideFlags: 0
@@ -3609,6 +3653,22 @@ MonoBehaviour:
   sceneId: 3288543179
   serverOnly: 0
   m_AssetId: 
+--- !u!114 &1839589616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839589612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0e8e7599d8b2f4ab909ebf0d643727, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  timerText: 
+  t: 0
 --- !u!1 &1841272139
 GameObject:
   m_ObjectHideFlags: 0

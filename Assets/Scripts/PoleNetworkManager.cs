@@ -4,12 +4,14 @@ using UnityEngine;
 using Mirror;
 using System.Diagnostics;
 using TMPro;
+using System.Threading;
+using UnityEngine.SceneManagement;
 
 [AddComponentMenu("")]
 public class PoleNetworkManager : NetworkRoomManager
 {
-    
 
+    private SemaphoreSlim clientExit = new SemaphoreSlim(1);
     public string PlayerName { get; set; }
      
     public void SetHostname(string hostname)
@@ -24,8 +26,32 @@ public class PoleNetworkManager : NetworkRoomManager
         public string name;
     }
 
+    //When a client exits, roomSlots is updated, removing that client position
+    // When there is only one player, session ends
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        clientExit.Wait();
+        for (int i = 0; i < roomSlots.Count; i++)
+        {
+            if(roomSlots[i] == null)
+            {
+                roomSlots.RemoveAt(i);
+            }  
+        }
+        clientExit.Release();
+        if (SceneManager.GetActiveScene().name == "RoomScene")
+            return;
+
+        if (roomSlots.Count == 1)
+        {
+            StopServer();
+        }
+    }
+
     #region Room
 
+    //Called by SceneLoadedForPlayer, if classification lap is active, all players start at position 0, if not, round robin is used
     public override GameObject OnRoomServerCreateGamePlayer(NetworkConnection conn, GameObject roomPlayer)
     {
         bool classif = roomSlots[0].GetComponent<PoleRoomPlayer>().classifLap;

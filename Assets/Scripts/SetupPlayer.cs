@@ -173,6 +173,12 @@ public class SetupPlayer : NetworkBehaviour
         classifLap = classif;
     }
 
+    [Command]
+    public void CmdUpdateTimers(){
+        FindObjectOfType<UIManager>().raceTimer.UpdateTimer();
+        FindObjectOfType<PolePositionManager>().time.UpdateTimer();
+    }
+
     #endregion
 
     #region ClientRpc

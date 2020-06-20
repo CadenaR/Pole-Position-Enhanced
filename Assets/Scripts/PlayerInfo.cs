@@ -37,16 +37,17 @@ public class PlayerInfo : NetworkBehaviour
     {
         playerTimer = FindObjectOfType<PolePositionManager>().time;
         if(lap <= maxLap){
-            lap++;
-            playerTimer.SaveTime(this.GetComponent<PlayerInfo>().lap);
-            Debug.Log(playerTimer.TimeToText(playerTimer.lapTime[playerTimer.lapTime.Count-1]));
+            lap++;            
+            playerTimer.SaveTime(ID, lap);            
+            //Debug.Log(playerTimer.TimeToText(playerTimer.lapTime[playerTimer.lapTime.Count-1]));
         }
-        else
-        {
-            playerTimer.SaveTotalTime();
-            RpcSaveTotalTime();
+        if(lap>maxLap)
+        {   
+            //playerTimer.SaveTotalTime(ID);
+            FindObjectOfType<UIManager>().UpdateEnd();
+            Debug.Log(playerTimer.TimeToText(playerTimer.t));    
             Debug.Log("Has terminado la carrera.");
-            FindObjectOfType<CameraController>().SwapToEndCamera();            
+            RpcSwapCamera();            
         }
     }
 
@@ -54,18 +55,18 @@ public class PlayerInfo : NetworkBehaviour
     public void CmdSetCheckpoint(int c)
     {
         checkpoint = c;
-    }   
+    }
 
     #endregion
 
-
     #region Rpc
-
+    
     [ClientRpc]
-    public void RpcSaveTotalTime(){
-        FindObjectOfType<UIManager>().UpdateEnd();
-        Debug.Log(playerTimer.TimeToText(playerTimer.t));
+    public void RpcSwapCamera(){
+        if(hasAuthority){
+            FindObjectOfType<CameraController>().SwapToEndCamera();
+        }
     }
-
-    #endregion    
+    #endregion
+    
 }

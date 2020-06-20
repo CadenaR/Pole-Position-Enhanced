@@ -223,6 +223,7 @@ public class UIManager : NetworkBehaviour
         }
     }
 
+    //Updates player's names & statuses
     private void UpdateRoomGUI()
     {
         foreach (TMP_Text field in playerNameTexts)
@@ -235,7 +236,6 @@ public class UIManager : NetworkBehaviour
             field.text = "";
         }
 
-        //foreach (NetworkRoomPlayer item in m_NetworkManager.roomSlots)
         for (int i = 0; i < m_NetworkManager.roomSlots.Count; i++)
         {
 
@@ -265,6 +265,8 @@ public class UIManager : NetworkBehaviour
         }
     }
 
+    //This is only for room owner
+    //Updates its laps with the inputted number
     public void SetLapsOnPlayer()
     {
         if (inputLaps.text.Trim() == "")
@@ -347,9 +349,7 @@ public class UIManager : NetworkBehaviour
             {
                 Semaphore.text = "";
             }
-            textTime.text = raceTimer.timerText;
-            raceTimer.UpdateTimer();
-            m_PositionManager.time.UpdateTimer();
+            FindObjectOfType<SetupPlayer>().CmdUpdateTimers();            
         }
         else
         {
@@ -391,16 +391,13 @@ public class UIManager : NetworkBehaviour
     public void UpdateEnd()
     {
         EndPlayers.text = "";
-        EndTimes.text = "";
-        PlayerInfo info = new PlayerInfo();
-        foreach (SetupPlayer player in FindObjectsOfType<SetupPlayer>())
-        {
-            info = player.GetComponent<PlayerInfo>();
+        EndTimes.text = "";        
+        foreach (PlayerInfo info in m_PositionManager.m_Players_Clone)
+        {            
             EndPlayers.text += "\n" + info.Name + "\n";
             EndTimes.text += "\n" + info.playerTimer.TimeToText(info.playerTimer.t) + "\n";
         }
     }
     #endregion
-
 }
 
