@@ -80,7 +80,17 @@ public class SetupPlayer : NetworkBehaviour
     void Start()
     {
         if (!classifLap)
+        {
             AppearCar();
+        }
+        else
+        {
+            if (isClientOnly)
+            {
+                if (!hasAuthority)
+                    this.GetComponent<Collider>().enabled = false;
+            }
+        }
 
         if (hasAuthority)
         {
@@ -118,10 +128,12 @@ public class SetupPlayer : NetworkBehaviour
         carWheelFL.GetComponent<Renderer>().enabled = true;
         carWheelBR.GetComponent<Renderer>().enabled = true;
         carWheelBL.GetComponent<Renderer>().enabled = true;
+        this.GetComponent<Collider>().enabled = true;
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        UnityEngine.Debug.Log("0Me estoy chocando y soy " + m_PlayerInfo.Name);
         if (classifLap && (collision.gameObject.GetComponent<WheelCollider>() != null || collision.gameObject.tag == "Player"))
         {
             UnityEngine.Debug.Log("Me estoy chocando y soy " + m_PlayerInfo.Name);
@@ -134,8 +146,8 @@ public class SetupPlayer : NetworkBehaviour
     [Command]
     public void CmdStartRace()
     {
-        raceStart = true;
-        FindObjectOfType<PolePositionManager>().time.ResetTimer();
+        raceStart = true;        
+        FindObjectOfType<UIManager>().raceTimer.ResetTimer();
         RpcRaceStart();
     }
 
@@ -170,6 +182,7 @@ public class SetupPlayer : NetworkBehaviour
     [ClientRpc]
     void RpcRaceStart()
     {
+        FindObjectOfType<UIManager>().raceTimer.ResetTimer();
         FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }
 

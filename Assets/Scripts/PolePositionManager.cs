@@ -14,7 +14,7 @@ public class PolePositionManager : NetworkBehaviour
     public SemaphoreSlim positionOrder = new SemaphoreSlim(1);
     public int numPlayers;
     public PoleNetworkManager networkManager;    
-    public Timer time = new Timer();
+    public Timer time;
     public List<int> raceOrder = new List<int>();
     //public SyncListOrder ordenSalida = new SyncListOrder();
     private readonly List<PlayerInfo> m_Players = new List<PlayerInfo>(4);
@@ -34,7 +34,12 @@ public class PolePositionManager : NetworkBehaviour
             m_DebuggingSpheres[i] = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             m_DebuggingSpheres[i].GetComponent<SphereCollider>().enabled = false;
         }
-    }  
+    }
+
+    private void Start()
+    {
+        time = new Timer();
+    }
 
     [Server]
     private void Update()

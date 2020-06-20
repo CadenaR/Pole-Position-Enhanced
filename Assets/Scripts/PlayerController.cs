@@ -75,6 +75,10 @@ public class PlayerController : NetworkBehaviour
             InputBrake = Input.GetAxis("Jump");
             Speed = m_Rigidbody.velocity.magnitude;
         }
+        if (this.GetComponent<Transform>().position.y > 3)
+        {
+            this.GetComponent<Transform>().position = new Vector3 (GetComponent<Transform>().position.x, 0.5f, GetComponent<Transform>().position.z);
+        }
     }
 
     [Client]

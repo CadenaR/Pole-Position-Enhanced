@@ -17,6 +17,8 @@ public class UIManager : NetworkBehaviour
 
     private PoleNetworkManager m_NetworkManager;
     public PolePositionManager m_PositionManager;
+    public SetupPlayer m_SetupPlayer;
+    public Timer raceTimer;
 
     public string playerName { get; set; }
 
@@ -56,6 +58,8 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private Text Semaphore;
     [SerializeField] private Text EndPlayers;
     [SerializeField] private Text EndTimes;
+    public GameObject loadingPanel;
+    
 
 
     public bool ready = false;
@@ -63,7 +67,7 @@ public class UIManager : NetworkBehaviour
     private void Awake()
     {
         m_NetworkManager = FindObjectOfType<PoleNetworkManager>();
-
+        raceTimer = new Timer();
     }
 
     private void Start()
@@ -86,23 +90,29 @@ public class UIManager : NetworkBehaviour
         }
     }
 
-    public void Update()
+    public void FixedUpdate()
     {
         if (SceneManager.GetActiveScene().name == "GameScene")
         {
-            if(m_PositionManager == null)
+            if (m_PositionManager == null)
             {
                 m_PositionManager = FindObjectOfType<PolePositionManager>();
+                
+            }
+            if(m_SetupPlayer == null)
+            {
+                foreach(SetupPlayer p in FindObjectsOfType<SetupPlayer>())
+                {
+                    if (p.hasAuthority)
+                    {
+                        m_SetupPlayer = p;
+                    }
+                }
                 return;
             }
-            UpdateGameGUI();
-        }
-    }
 
-    public void FixedUpdate()
-    {
-        //ClientDebug("00"+ready);
-        
+            UpdateGameGUI(); 
+        }
         if (SceneManager.GetActiveScene().name == "RoomScene")
         {
             UpdateRoomGUI();
@@ -325,41 +335,38 @@ public class UIManager : NetworkBehaviour
     #region GameRoom
 
     public void UpdateGameGUI()
-    {        
-        foreach(SetupPlayer player in FindObjectsOfType<SetupPlayer>())
+    {
+        if (m_SetupPlayer.raceStart)
         {
-            if (player.hasAuthority)
+            if (!m_SetupPlayer.classifLap)
             {
-                if (player.raceStart)
+                textTime.text = raceTimer.timerText;
+                UpdateLaps();
+            }
+            if (Semaphore.text == "go!" && (int)raceTimer.t >= 1)
+            {
+                Semaphore.text = "";
+            }
+            textTime.text = raceTimer.timerText;
+            raceTimer.UpdateTimer();
+            m_PositionManager.time.UpdateTimer();
+        }
+        else
+        {
+            t = (NetworkTime.time - startTime) % 60;
+            if (t >= 3)
+            {
+                loadingPanel.SetActive(false);
+                if (t <= 4) return;
+                Semaphore.text = "" + (7 - (int)t);
+                if (t >= 7)
                 {
-                    textTime.text = m_PositionManager.time.timerText;
-                    if (!player.classifLap)
-                    {
-                        UpdateLaps();
-                    }
-                    if (Semaphore.text == "go!" && (int)m_PositionManager.time.t >= 1)
-                    {
-                        Semaphore.text = "";
-                    }
-                    m_PositionManager.time.UpdateTimer();
-                    
+                    Semaphore.text = "go!";
+                    m_SetupPlayer.CmdStartRace();
                 }
-                else
-                {
-                    t = (NetworkTime.time - startTime) % 60;
-                    if (t >= 2)
-                    {
-                        Semaphore.text = "" + (5 - (int)t);
-                        if (t >= 5)
-                        {
-                            Semaphore.text = "go!";
-                            player.CmdStartRace();
-                        }
-                    }
-                }
-                return;
             }
         }
+
     }
 
     public void UpdateLaps()
