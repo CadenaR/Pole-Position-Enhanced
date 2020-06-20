@@ -117,6 +117,9 @@ public class SetupPlayer : NetworkBehaviour
         {
             this.GetComponent<Transform>().position = new Vector3(GetComponent<Transform>().position.x, 0.5f, GetComponent<Transform>().position.z);
         }
+        if(raceStart){            
+            FindObjectOfType<PolePositionManager>().time.UpdateTimer();
+        }
     }
 
     void OnSpeedChangeEventHandler(float speed)
@@ -140,11 +143,9 @@ public class SetupPlayer : NetworkBehaviour
     }
 
     void OnCollisionEnter(Collision collision)
-    {
-        UnityEngine.Debug.Log("0Me estoy chocando y soy " + m_PlayerInfo.Name);
+    {        
         if (classifLap && (collision.gameObject.GetComponent<WheelCollider>() != null || collision.gameObject.tag == "Player"))
-        {
-            UnityEngine.Debug.Log("Me estoy chocando y soy " + m_PlayerInfo.Name);
+        {     
             Physics.IgnoreCollision(collision.gameObject.GetComponent<Collider>(), this.GetComponent<Collider>());
         }
     }
@@ -161,8 +162,7 @@ public class SetupPlayer : NetworkBehaviour
 
     [Command]
     public void CmdEndClassification()
-    {
-        UnityEngine.Debug.Log("length 1: " + m_PolePositionManager.raceOrder.Count);
+    {        
         RpcRestartPosition();
 
     }
@@ -171,12 +171,6 @@ public class SetupPlayer : NetworkBehaviour
     public void CmdSetClassifLap(bool classif)
     {
         classifLap = classif;
-    }
-
-    [Command]
-    public void CmdUpdateTimers(){
-        FindObjectOfType<UIManager>().raceTimer.UpdateTimer();
-        FindObjectOfType<PolePositionManager>().time.UpdateTimer();
     }
 
     #endregion
@@ -211,6 +205,12 @@ public class SetupPlayer : NetworkBehaviour
     public void RpcUpdatePositions(string myRaceOrder)
     {
         FindObjectOfType<UIManager>().UpdatePositions(myRaceOrder);
+    }
+
+    [ClientRpc]
+    public void RpcUpdateClientEnd(string pl, string tim){
+        m_UIManager.EndPlayers.text = pl;
+        m_UIManager.EndTimes.text = tim;
     }
 
     [ClientRpc]

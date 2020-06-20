@@ -72,7 +72,7 @@ public class CameraController : MonoBehaviour
         }
     }
     
-    public void SwapToEndCamera(){
+    public void SwapToEndCamera(){// cambio de camara para la pantalla de resultados finales
         end = true;
         this.endCamera.SetActive(true);
         this.mainCamera.gameObject.SetActive(false);

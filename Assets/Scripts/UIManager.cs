@@ -29,7 +29,6 @@ public class UIManager : NetworkBehaviour
     public int MaxLap;
 
 
-
     [Header("Main Menu")] [SerializeField] private GameObject mainMenu;
     [SerializeField] private Button buttonHost;
     [SerializeField] private Button buttonClient;
@@ -56,11 +55,12 @@ public class UIManager : NetworkBehaviour
     [SerializeField] public Text textLaps;
     [SerializeField] public Text textPosition;
     [SerializeField] private Text Semaphore;
-    [SerializeField] private Text EndPlayers;
-    [SerializeField] private Text EndTimes;
+    [SerializeField] public Text EndPlayers;
+    [SerializeField] public Text EndTimes;
     public GameObject loadingPanel;
-    
-
+    public GameObject pauseMenu;
+    public Scrollbar timesScroll;
+    public Text timesText;
 
     public bool ready = false;
 
@@ -86,14 +86,20 @@ public class UIManager : NetworkBehaviour
             startTime = NetworkTime.time;
             textPosition.transform.parent.gameObject.SetActive(false);
             nextLap = false;
-            
+            timesText.text = "";
         }
     }
 
     public void FixedUpdate()
     {
-        if (SceneManager.GetActiveScene().name == "GameScene")
+        if (SceneManager.GetActiveScene().name == "GameScene" && FindObjectOfType<CameraController>() != null)
         {
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                pauseMenu.SetActive(!pauseMenu.active);
+            }
+
             if (m_PositionManager == null)
             {
                 m_PositionManager = FindObjectOfType<PolePositionManager>();
@@ -116,17 +122,7 @@ public class UIManager : NetworkBehaviour
         if (SceneManager.GetActiveScene().name == "RoomScene")
         {
             UpdateRoomGUI();
-        }
-        /*
-        if (m_PositionManager == null)
-        {
-            m_PositionManager = FindObjectOfType<PolePositionManager>();
-        }
-        else if (!ready)
-        {
-            ready = true;
-        }*/
-        //return;
+        }    
     }
 
     public void ActivateMainMenu()
@@ -332,6 +328,23 @@ public class UIManager : NetworkBehaviour
         scrollbar.value = 0;
     }
 
+    public void AppendLapTime(string lapTime)
+    {
+        StartCoroutine(AppendAndScrollLaps(lapTime));
+    }
+
+    IEnumerator AppendAndScrollLaps(string message)
+    {
+        timesText.text += message + "\n";
+
+        // it takes 2 frames for the UI to update ?!?!
+        yield return null;
+        yield return null;
+
+        // slam the scrollbar down
+        timesScroll.value = -3;
+    }
+
     #endregion
 
     #region GameRoom
@@ -349,7 +362,7 @@ public class UIManager : NetworkBehaviour
             {
                 Semaphore.text = "";
             }
-            FindObjectOfType<SetupPlayer>().CmdUpdateTimers();            
+            raceTimer.UpdateTimer();
         }
         else
         {
@@ -369,6 +382,7 @@ public class UIManager : NetworkBehaviour
 
     public void UpdateLaps()
     {
+        if (NetworkClient.connection == null) return;
         CurrentLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().lap;
         MaxLap = NetworkClient.connection.identity.GetComponent<PlayerInfo>().maxLap;
         if (CurrentLap <= MaxLap)
@@ -388,16 +402,19 @@ public class UIManager : NetworkBehaviour
     #endregion
 
     #region End
-    public void UpdateEnd()
+
+    public void ExitGame()
     {
-        EndPlayers.text = "";
-        EndTimes.text = "";        
-        foreach (PlayerInfo info in m_PositionManager.m_Players_Clone)
-        {            
-            EndPlayers.text += "\n" + info.Name + "\n";
-            EndTimes.text += "\n" + info.playerTimer.TimeToText(info.playerTimer.t) + "\n";
+        if (NetworkClient.connection.identity.GetComponent<SetupPlayer>().isClientOnly)
+        {
+            m_NetworkManager.StopClient();
+        }
+        else 
+        {
+            m_NetworkManager.StopHost();
         }
     }
+    
     #endregion
 }
 

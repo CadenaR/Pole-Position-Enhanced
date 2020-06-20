@@ -9,15 +9,13 @@ public class Timer: NetworkBehaviour
     [SyncVar]
     float startTime;    
     public string timerText;
-    public List<List<float>> lapTime; 
-    [SyncVar]
+    public List<List<float>> lapTime;
     public float t;
 
     void Awake()
     {
         startTime = (float)NetworkTime.time;
-        lapTime = new List<List<float>>();
-        UnityEngine.Debug.Log("hola");        
+        lapTime = new List<List<float>>();                
         for(int i = 0; i<4; i++){
             List<float> l = new List<float>();       
             lapTime.Add(l);

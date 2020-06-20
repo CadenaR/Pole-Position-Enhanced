@@ -37,17 +37,34 @@ public class PlayerInfo : NetworkBehaviour
     {
         playerTimer = FindObjectOfType<PolePositionManager>().time;
         if(lap <= maxLap){
-            lap++;            
-            playerTimer.SaveTime(ID, lap);            
-            //Debug.Log(playerTimer.TimeToText(playerTimer.lapTime[playerTimer.lapTime.Count-1]));
+            playerTimer.SaveTime(ID, lap);
+            Debug.Log(playerTimer.TimeToText(playerTimer.lapTime[ID][lap-1]));
+            lap++;
+            
+            //Debug.Log(playerTimer.lapTime.Count);
+            //Debug.Log(playerTimer.lapTime[0].Count);
+            
         }
         if(lap>maxLap)
         {   
-            //playerTimer.SaveTotalTime(ID);
-            FindObjectOfType<UIManager>().UpdateEnd();
-            Debug.Log(playerTimer.TimeToText(playerTimer.t));    
+            playerTimer.SaveTotalTime(ID);    
+            Debug.Log(playerTimer.TimeToText(playerTimer.t));
             Debug.Log("Has terminado la carrera.");
-            RpcSwapCamera();            
+            FindObjectOfType<PolePositionManager>().UpdateEnd(this.Name, this.playerTimer.TimeToText(playerTimer.lapTime[ID][lap-1]));
+            RpcSwapCamera();
+            for (int i = 0; i < playerTimer.lapTime[ID].Count; i++)
+            {
+                if(i < playerTimer.lapTime[ID].Count - 1)
+                {
+                    RpcAddLapsTime("\nLap " + (i+1)  + ":\n" + playerTimer.TimeToText(playerTimer.lapTime[ID][i]));
+                }
+                else
+                {
+                    RpcAddLapsTime("\n\nTotal time: "  + ":\n" + playerTimer.TimeToText(playerTimer.lapTime[ID][i]));
+                }
+            }
+
+
         }
     }
 
@@ -64,8 +81,16 @@ public class PlayerInfo : NetworkBehaviour
     [ClientRpc]
     public void RpcSwapCamera(){
         if(hasAuthority){
+            
             FindObjectOfType<CameraController>().SwapToEndCamera();
         }
+    }
+
+    [ClientRpc]
+    public void RpcAddLapsTime(string lap)
+    {
+        if(hasAuthority)
+            FindObjectOfType<UIManager>().AppendLapTime(lap);
     }
     #endregion
     

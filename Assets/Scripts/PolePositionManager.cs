@@ -21,7 +21,9 @@ public class PolePositionManager : NetworkBehaviour
     public List<PlayerInfo> m_Players_Clone = new List<PlayerInfo>(4);
     private CircuitController m_CircuitController;
     private GameObject[] m_DebuggingSpheres;
-
+    public string EndPlayers;
+    public string EndTimes;
+        
     [Server]
     private void Awake()
     {
@@ -83,6 +85,18 @@ public class PolePositionManager : NetworkBehaviour
             if(this.m_Players_Clone[i] == null)
             {
                 this.m_Players_Clone.RemoveAt(i);
+                if(m_Players_Clone.Count == 1)
+                {
+                    //if there is only one player left, game ends
+                    if (m_Players_Clone[0].isClientOnly)
+                    {
+                        networkManager.StopClient();
+                    }
+                    else
+                    {
+                        networkManager.StopHost();
+                    }
+                }
                 return;
             }
         }
@@ -173,5 +187,18 @@ public class PolePositionManager : NetworkBehaviour
             player.lap = 1;
             player.GetComponent<SetupPlayer>().RpcAppear();
         }        
+    }
+
+    [Server]
+    public void UpdateEnd(string player, string time)
+    {
+
+        EndPlayers += "\n" + player + "\n";
+        EndTimes += "\n" + time + "\n";
+
+        foreach(SetupPlayer set in FindObjectsOfType<SetupPlayer>())
+        {
+            set.RpcUpdateClientEnd(EndPlayers, EndTimes);
+        }
     }
 }
