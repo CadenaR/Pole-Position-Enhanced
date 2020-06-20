@@ -22,7 +22,7 @@ public class Timer: NetworkBehaviour
         }
     } 
 
-
+    //
     //Dentro de este método se actualizará el tiempo mientras no haya terminado la carrera
     public void UpdateTimer()
     {
