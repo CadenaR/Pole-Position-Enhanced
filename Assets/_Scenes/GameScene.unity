@@ -5638,6 +5638,11 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[24].z
       value: 130.18944
       objectReference: {fileID: 0}
+    - target: {fileID: 3251817754351065410, guid: 2356b61abd7af864eadff2e62f8c8586,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3251817754351065411, guid: 2356b61abd7af864eadff2e62f8c8586,
         type: 3}
       propertyPath: m_LocalPosition.x
