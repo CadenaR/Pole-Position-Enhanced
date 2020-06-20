@@ -85,6 +85,7 @@ public class UIManager : NetworkBehaviour
         {
             startTime = NetworkTime.time;
             textPosition.transform.parent.gameObject.SetActive(false);
+            textTime.transform.parent.gameObject.SetActive(false);
             nextLap = false;
             timesText.text = "";
         }
@@ -355,6 +356,15 @@ public class UIManager : NetworkBehaviour
         {
             if (!m_SetupPlayer.classifLap)
             {
+                if(!textTime.transform.parent.gameObject.active)
+                    textTime.transform.parent.gameObject.SetActive(true);
+
+                if (!textPosition.transform.parent.gameObject.active)
+                {
+                    if ((int)raceTimer.t >= 6)
+                        textPosition.transform.parent.gameObject.SetActive(true);
+                }
+                
                 textTime.text = raceTimer.timerText;
                 UpdateLaps();
             }
@@ -362,6 +372,7 @@ public class UIManager : NetworkBehaviour
             {
                 Semaphore.text = "";
             }
+
             raceTimer.UpdateTimer();
         }
         else

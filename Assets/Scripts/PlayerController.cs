@@ -289,9 +289,13 @@ public class PlayerController : NetworkBehaviour
         if (isClientOnly)
         {
             this.GetComponent<Transform>().position = serverPlayerPosition;
-        }
-            FindObjectOfType<UIManager>().startTime = NetworkTime.time;
-            FindObjectOfType<PolePositionManager>().time.ResetTimer();
+        }            
+    }
+
+    [ClientRpc]
+    public void RpcRestartTimer(){
+        FindObjectOfType<UIManager>().startTime = NetworkTime.time;
+        FindObjectOfType<PolePositionManager>().time.ResetTimer();
     }
 
     [ClientRpc]

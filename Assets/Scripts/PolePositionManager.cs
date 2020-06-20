@@ -183,9 +183,12 @@ public class PolePositionManager : NetworkBehaviour
             player.GetComponent<Transform>().position = NetworkManager.startPositions[pos].position;
             player.GetComponent<Transform>().rotation = NetworkManager.startPositions[pos].rotation;
             player.GetComponent<PlayerController>().RpcUpdatePosition(player.GetComponent<Transform>().position);
+            player.GetComponent<PlayerController>().RpcRestartTimer();
             player.GetComponent<SetupPlayer>().classifLap = false;
             player.lap = 1;
             player.GetComponent<SetupPlayer>().RpcAppear();
+            FindObjectOfType<UIManager>().startTime = NetworkTime.time;
+            time.ResetTimer();
         }        
     }
 
