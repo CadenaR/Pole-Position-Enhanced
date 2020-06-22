@@ -42,11 +42,13 @@ public class PoleNetworkManager : NetworkRoomManager
         clientExit.Release();
         if (SceneManager.GetActiveScene().name == "RoomScene")
             return;
-
+        clientExit.Wait();
         if (roomSlots.Count == 1)
         {
+            clientExit.Release();
             StopServer();
         }
+        clientExit.Release();
     }
 
     #region Room
